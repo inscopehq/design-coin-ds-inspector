@@ -5,20 +5,15 @@ variant, Figma variable names (`text/primary`, `radius/lg`, `Elevation/Resting`)
 deviations from spec, and whether it exists in code (Chromatic story) or only in
 design (Figma).
 
-**Live (org members only — sign in with your inscopehq GitHub account):** https://didactic-bassoon-9mw3ykp.pages.github.io/
+**Live:** https://inscopehq.github.io/design-coin-ds-inspector/
 
 ## Use on any prototype
-
-**Hosted here (recommended):** add your prototype as a folder under
-`docs/prototypes/<name>/`, add this line before `</body>`, push — it goes live
-on the site behind org sign-in:
 ```html
-<script src="../../ds-inspector.js"></script>
+<script src="https://inscopehq.github.io/design-coin-ds-inspector/ds-inspector.js"></script>
 ```
-
-**Deployed elsewhere:** copy `dist/ds-inspector.js` next to your HTML and use
-`<script src="ds-inspector.js"></script>` — the site's script URL won't load
-cross-origin because the site requires GitHub org sign-in.
+Add that line before `</body>` — done. Or host the prototype on this site: drop
+its folder under `docs/prototypes/<name>/` (script src `../../ds-inspector.js`)
+and push.
 
 ## Develop
 - `node test.mjs` — 74 jsdom checks, must pass
