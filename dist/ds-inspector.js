@@ -1205,9 +1205,35 @@ window.__DSI_REGISTRY = {"_readme":["This file is what makes the inspector say '
       } else if (this.tab) { this.tab.remove(); this.tab = null; }
     },
 
+    // Drag the panel by its header; double-click the header to dock it back
+    // to the right edge.
+    makeDraggable(header) {
+      header.addEventListener('mousedown', (e) => {
+        if (e.target.closest && e.target.closest('button, a')) return;
+        const wrap = this.wrap;
+        const r = wrap.getBoundingClientRect();
+        const dx = e.clientX - r.left, dy = e.clientY - r.top;
+        const move = (ev) => {
+          wrap.classList.add('floating');
+          wrap.style.left = `${Math.max(8 - r.width + 60, Math.min(window.innerWidth - 60, ev.clientX - dx))}px`;
+          wrap.style.top = `${Math.max(0, Math.min(window.innerHeight - 44, ev.clientY - dy))}px`;
+          wrap.style.right = 'auto';
+        };
+        const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
+        window.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', up);
+        e.preventDefault();
+      });
+      header.addEventListener('dblclick', (e) => {
+        if (e.target.closest && e.target.closest('button, a')) return;
+        this.wrap.classList.remove('floating');
+        this.wrap.style.left = this.wrap.style.top = this.wrap.style.right = '';
+      });
+    },
+
     chrome(bodyNodes) {
       this.wrap.innerHTML = '';
-      const header = $('div', { class: 'hd' }, [
+      const header = $('div', { class: 'hd', title: 'Drag to move · double-click to dock right' }, [
         $('div', { class: 'ttl' }, [$('span', { class: 'dot' }), $('span', { text: 'DS Inspector' })]),
         $('div', { class: 'hdbtns' }, [
           $('button', { class: 'gh', text: state.on ? 'Inspecting' : 'Paused', title: 'Toggle inspect mode (⌘⇧I / Esc)', onclick: () => setMode(!state.on) }),
@@ -1218,6 +1244,7 @@ window.__DSI_REGISTRY = {"_readme":["This file is what makes the inspector say '
       ]);
       const body = $('div', { class: 'bd' }, bodyNodes);
       this.wrap.append(header, body);
+      this.makeDraggable(header);
     },
     renderChrome() { if (this.spec) this.render(this.spec); else if (this.audits.length) this.renderAudit(); else this.renderEmpty(); },
 
@@ -1728,6 +1755,10 @@ window.__DSI_REGISTRY = {"_readme":["This file is what makes the inspector say '
     box-shadow: -8px 0 32px rgba(0,0,0,.28); border-left: 1px solid #26383f;
   }
   .wrap.paused { opacity: .92; }
+  .wrap.floating { height: min(85vh, 760px); border-radius: 10px; border: 1px solid #2b444c;
+                   box-shadow: 0 16px 56px rgba(0,0,0,.5); overflow: hidden; }
+  .hd { cursor: grab; user-select: none; }
+  .hd:active { cursor: grabbing; }
   .wrap, .wrap * { cursor: default; }
   .gh, summary, a { cursor: pointer !important; }
   .reopen { position: fixed; top: 10px; right: 10px; z-index: 2147483647;
