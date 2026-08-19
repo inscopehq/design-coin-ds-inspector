@@ -5,11 +5,11 @@ variant, Figma variable names (`text/primary`, `radius/lg`, `Elevation/Resting`)
 deviations from spec, and whether it exists in code (Chromatic story) or only in
 design (Figma).
 
-**Live:** https://inscopehq.github.io/ds-inspector/
+**Live:** https://inscopehq.github.io/design-coin-ds-inspector/
 
 ## Use on any prototype
 ```html
-<script src="https://inscopehq.github.io/ds-inspector/ds-inspector.js"></script>
+<script src="https://inscopehq.github.io/design-coin-ds-inspector/ds-inspector.js"></script>
 ```
 
 ## Develop
