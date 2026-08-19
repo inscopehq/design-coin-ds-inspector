@@ -1219,9 +1219,17 @@ window.__DSI_REGISTRY = {"_readme":["This file is what makes the inspector say '
           wrap.style.top = `${Math.max(0, Math.min(window.innerHeight - 44, ev.clientY - dy))}px`;
           wrap.style.right = 'auto';
         };
-        const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
-        window.addEventListener('mousemove', move);
-        window.addEventListener('mouseup', up);
+        // Capture phase: the inspector's own click-shield stops mouseup at the
+        // document, so a bubble-phase listener would never fire and the panel
+        // would stay glued to the cursor.
+        const up = () => {
+          window.removeEventListener('mousemove', move, true);
+          window.removeEventListener('mouseup', up, true);
+          window.removeEventListener('blur', up);
+        };
+        window.addEventListener('mousemove', move, true);
+        window.addEventListener('mouseup', up, true);
+        window.addEventListener('blur', up);
         e.preventDefault();
       });
       header.addEventListener('dblclick', (e) => {
