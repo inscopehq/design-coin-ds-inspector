@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "DS Inspector",
+  "version": "1.0.0",
+  "description": "Click any element in a prototype → Coin component, variant, Figma variable names, deviations, and code/design status.",
+  "action": { "default_title": "DS Inspector — inspect this page" },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["activeTab", "scripting"]
+}
