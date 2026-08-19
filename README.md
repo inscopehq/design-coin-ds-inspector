@@ -8,6 +8,12 @@ design (Figma).
 **Live:** https://inscopehq.github.io/design-coin-ds-inspector/
 
 ## Use on any prototype
+
+**Bookmarklet (no code changes):** drag the "DS Inspect" button on the live site
+to your bookmarks bar, open any deployed prototype, click it — the inspector
+loads into that page.
+
+## Or embed it
 ```html
 <script src="https://inscopehq.github.io/design-coin-ds-inspector/ds-inspector.js"></script>
 ```

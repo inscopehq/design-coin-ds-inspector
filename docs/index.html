@@ -2,17 +2,30 @@
 <style>
  body{font:15px/1.6 ui-sans-serif,-apple-system,Inter,system-ui;background:#0F1E24;color:#E1E5E4;margin:0;padding:48px;max-width:720px}
  h1{font-size:20px;margin:0 0 6px} .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#34A290;margin-right:8px}
- p{color:#9AA7A6} a{color:#5ED0BB} code{background:#16292f;border:1px solid #26383f;border-radius:5px;padding:2px 6px;font-size:13px}
+ h3{margin-top:32px} p,li{color:#9AA7A6} a{color:#5ED0BB}
+ code{background:#16292f;border:1px solid #26383f;border-radius:5px;padding:2px 6px;font-size:13px}
  li{margin:6px 0}
+ .lens{display:inline-block;background:#34A290;color:#04201c;font-weight:700;font-size:15px;
+       padding:10px 18px;border-radius:8px;text-decoration:none;cursor:grab}
+ .hint{font-size:13px;color:#67716E}
 </style>
 <h1><span class="dot"></span>DS Inspector</h1>
 <p>Click any element in a prototype → see its Coin component, variant, Figma variable names, deviations, and whether it exists in code (Storybook) or design (Figma).</p>
-<h3>Try it</h3>
+
+<h3>Plug it onto any prototype — no code changes</h3>
+<p>Drag this button to your bookmarks bar once:</p>
+<p><a class="lens" href="javascript:(function(){if(window.__DSI_LOADED__)return;var s=document.createElement('script');s.src='https://inscopehq.github.io/design-coin-ds-inspector/ds-inspector.js';document.documentElement.appendChild(s);})();">🔎 DS Inspect</a></p>
+<p>Then open <b>any</b> deployed prototype — Vercel, Pages, localhost, anywhere — and click the bookmark. The inspector loads into that page.</p>
+<p class="hint">If nothing appears, the site sets a Content-Security-Policy that blocks external scripts — use the embed line below instead.</p>
+
+<h3>Or embed it permanently</h3>
+<p>One line before <code>&lt;/body&gt;</code>:</p>
+<p><code>&lt;script src="https://inscopehq.github.io/design-coin-ds-inspector/ds-inspector.js"&gt;&lt;/script&gt;</code></p>
+
+<h3>Examples</h3>
 <ul>
  <li><a href="prototypes/ews-parity/index.html">EWS prototype</a> — the full app flow</li>
  <li><a href="prototypes/penny-option-3/index.html">Penny asks a question · option 3</a> — type “one question” / “multi question” in the chat, then Alt+click the card</li>
 </ul>
-<h3>Use it on any prototype</h3>
-<p>Add one line before <code>&lt;/body&gt;</code>:</p>
-<p><code>&lt;script src="https://inscopehq.github.io/design-coin-ds-inspector/ds-inspector.js"&gt;&lt;/script&gt;</code></p><p>Or host the prototype on this site: drop its folder in <code>docs/prototypes/</code> and push.</p>
-<p>Keys: <b>Esc</b> pause · <b>⌘⇧I</b> resume · <b>Alt+click</b> inspect transient UI (open menus stay open) · <b>Audit</b> scans the whole page.</p>
+
+<p>Keys: <b>Esc</b> pause · <b>⌘⇧I</b> resume · <b>Alt+click</b> inspect transient UI (open menus stay open) · <b>Audit</b> scans the whole page · drag the panel header to move it, double-click to re-dock.</p>
