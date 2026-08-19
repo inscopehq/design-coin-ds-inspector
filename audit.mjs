@@ -1,0 +1,22 @@
+import { JSDOM, VirtualConsole } from 'jsdom';
+import { readFileSync } from 'node:fs';
+const file = process.argv[2];
+if (!file) { console.error("usage: node audit.mjs <prototype.html>"); process.exit(1); }
+const vc = new VirtualConsole();
+vc.on('jsdomError', e => { if(!/Not implemented|Could not parse/.test(e.message)) console.log('ERR:', e.message.split('\n')[0]); });
+const dom = new JSDOM(readFileSync(file,'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, virtualConsole:vc, url:'http://localhost/x.html' });
+const { window } = dom;
+window.__DSI_TOKENS = JSON.parse(readFileSync('tokens.coin.json','utf8'));
+window.__DSI_REGISTRY = JSON.parse(readFileSync('registry.json','utf8'));
+const s = window.document.createElement('script'); s.textContent = readFileSync('inspect.js','utf8');
+window.document.body.append(s);
+await new Promise(r => window.document.readyState!=='loading' ? r() : window.document.addEventListener('DOMContentLoaded', r));
+const a = window.__DSI.auditPage();
+console.log(`\n${file.split('/').pop()}`);
+console.log(`  elements ${a.total} · on-system ${a.coverage}%`);
+console.log(`  off-system colours: ${a.offColors.length}, sizes: ${a.offSizes.length}, undeclared components: ${a.unmapped.length}`);
+console.log('  top off-system colours:');
+a.offColors.slice(0,6).forEach(c => console.log(`    ${c.value.padEnd(22)} ×${String(c.count).padEnd(4)} ${c.nearest?`→ ${c.nearest.name} (${c.nearest.value}, Δ${c.nearest.dist})`:'no close token'}`));
+console.log('  top undeclared:');
+a.unmapped.slice(0,6).forEach(u => console.log(`    ${u.key.padEnd(28)} ×${String(u.count).padEnd(4)} guess: ${u.guess||'—'}`));
+process.exit(0);

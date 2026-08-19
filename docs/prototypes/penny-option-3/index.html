@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Option 3 · Header band</title>
+<link rel="stylesheet" href="coin-tokens.css">
+<!-- ------------------------------------------------------------------
+     Option 3 · Header band.
+     Penny asks a question: star FAB → AI Assistant panel → Ask Penny
+     → chat. Typing “one question” / “multi question” spawns a Coin
+     question card (multi = 4 tabs, Next → Review → Submit).
+     The document editor exactly as it ships, in the real app chrome: left
+     icon rail, grey top nav, then one editor toolbar spanning the width.
+     Extracted verbatim from design-EWS/ews-parity/index.html (styles
+     #dx-editor-style, markup #view-document, behaviour #dx-editor-script).
+     The editor keeps its own pre-Coin palette inside .dx-frame; the shell
+     around it uses Coin tokens.
+     ------------------------------------------------------------------ -->
+<style>
+/* ============================================================
+   App shell around the editor: the left icon rail and the grey
+   top nav, both copied from the ews-parity host app so every
+   option sits in the real chrome. Coin tokens (coin-tokens.css).
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; overflow: hidden; display: flex; font-family: var(--font-sans); }
+button { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+
+/* ---- Left icon rail ---- */
+.nav {
+  flex: 0 0 auto; z-index: 5;
+  width: var(--left-nav-w); height: 100%;
+  background: var(--background-page);
+  border-right: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  padding: 0 0 var(--sp-m);
+}
+.nav__mark { flex: 0 0 auto; width: var(--left-nav-w); height: 44px;
+  display: grid; place-items: center; color: var(--text-primary); }
+.nav__mark svg { display: block; width: 20px; height: 20px; }
+.nav__group { display: flex; flex-direction: column; align-items: center; gap: var(--sp-2xs); margin-top: var(--sp-m); }
+.nav__item {
+  position: relative; display: grid; place-items: center;
+  width: 40px; height: 40px; border-radius: var(--radius-md);
+  color: var(--text-secondary); cursor: pointer; transition: background .12s, color .12s;
+  border: 0; background: transparent;
+}
+.nav__item:hover { background: var(--button-ghost-hover); color: var(--text-primary); }
+.nav__item:focus { outline: none; }
+.nav__item:focus-visible { outline: 2px solid var(--brand-indigo-500); outline-offset: 2px; }
+.nav__item.is-active { background: var(--background-sunken); color: var(--text-primary); }
+.nav__item svg { flex: 0 0 auto; }
+.nav__label {
+  position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
+  white-space: nowrap; padding: var(--sp-2xs) var(--sp-s);
+  background: var(--background-surface); border: 1px solid var(--border-default); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md); color: var(--text-primary);
+  font: var(--fw-medium) var(--fs-body-sm)/1 var(--font-sans);
+  opacity: 0; pointer-events: none; transition: opacity .1s; z-index: 60;
+}
+.nav__item:hover .nav__label { opacity: 1; }
+.nav__badge {
+  position: absolute; top: 3px; right: 3px; min-width: 16px; height: 16px; padding: 0 var(--sp-2xs);
+  border-radius: var(--radius-full); background: var(--semantic-error-bg); color: var(--semantic-error-text);
+  font: var(--fw-semibold) 10px/16px var(--font-sans); text-align: center; box-shadow: 0 0 0 2px var(--background-page);
+}
+.nav__spacer { flex: 1; }
+.nav__bottom { display: flex; flex-direction: column; align-items: center; gap: var(--sp-xs); }
+
+/* ---- BAR 1 · the grey top nav ---- */
+.shell { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.topbar { flex: 0 0 auto; height: 44px; display: flex; align-items: center; gap: var(--sp-m);
+  padding: 0 var(--sp-m); border-bottom: 1px solid var(--border-subtle); background: var(--brand-neutral-50); }
+.topbar__nav { display: inline-flex; align-items: center; gap: var(--sp-3xs); }
+.topbar__btn { display: grid; place-items: center; width: 28px; height: 28px; border-radius: var(--radius-sm);
+  color: var(--text-secondary); background: 0; border: 0; cursor: pointer; }
+.topbar__btn:hover { background: var(--button-ghost-hover); color: var(--text-primary); }
+.topbar__btn:disabled { opacity: .35; cursor: default; }
+.topbar__btn:disabled:hover { background: 0; color: var(--text-secondary); }
+.topbar__btn svg { display: block; }
+.topbar__help { position: relative; margin-left: auto; display: grid; place-items: center;
+  width: 28px; height: 28px; border: 0; padding: 0; background: 0; cursor: pointer;
+  border-radius: var(--radius-sm); color: var(--text-secondary); }
+.topbar__help:hover { background: var(--button-ghost-hover); color: var(--text-primary); }
+.topbar__help svg { display: block; }
+.topbar__help-dot { position: absolute; top: 1px; right: 1px; width: 7px; height: 7px;
+  border-radius: var(--radius-full); background: var(--semantic-error-text);
+  box-shadow: 0 0 0 2px var(--brand-neutral-50); }
+.crumbs { display: flex; align-items: center; gap: var(--sp-s); min-width: 0; }
+.crumb { display: inline-flex; align-items: center; gap: var(--sp-xs); background: 0; border: 0; cursor: pointer;
+  font: var(--fw-medium) var(--fs-body-sm)/1 var(--font-mono); color: var(--text-primary);
+  padding: var(--sp-2xs) var(--sp-xs); border-radius: var(--radius-sm); }
+.crumb--client:hover { background: var(--button-ghost-hover); }
+.crumb--eng { cursor: default; }
+.crumb__sep { color: var(--text-placeholder); font: var(--fw-regular) var(--fs-body-sm)/1 var(--font-mono); }
+.crumb > svg { display: block; color: var(--text-secondary); }
+.crumb .avatar { width: 20px; height: 20px; font-size: 10px; }
+
+.avatar { flex: 0 0 auto; display: grid; place-items: center; border-radius: var(--radius-full);
+  font: var(--fw-semibold) var(--fs-badge-sm)/1 var(--font-sans); overflow: hidden; }
+.avatar__mono { grid-area: 1 / 1; }
+.avatar__logo { grid-area: 1 / 1; width: 100%; height: 100%; object-fit: contain; background: var(--background-surface); }
+.avatar--sq { border-radius: var(--radius-md); }
+.avatar--32 { width: 32px; height: 32px; }
+.av-indigo { background: var(--brand-indigo-100); color: var(--brand-indigo-600); }
+.av-lime { background: var(--accent-lime-100); color: var(--accent-lime-600); }
+
+/* ---- prototype-only: switch between the options in place ---- */
+.proto-switch { flex: 0 0 auto; display: inline-flex; align-items: center; gap: var(--sp-xs); }
+.proto-switch > span { font: var(--fw-medium) var(--fs-body-xs)/1 var(--font-mono);
+  letter-spacing: .4px; text-transform: uppercase; color: var(--text-placeholder); }
+.proto-switch select {
+  font: var(--fw-medium) var(--fs-body-sm)/1 var(--font-sans); color: var(--text-primary);
+  background: var(--background-surface); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm); padding: 5px var(--sp-xs); cursor: pointer;
+}
+.proto-switch select:hover { border-color: var(--border-default); }
+
+/* the editor fills everything under bar 1 */
+.doc { flex: 1 1 auto; min-height: 0; display: flex; background: #fff; overflow: hidden; }
+</style>
+<style id="dx-editor-style">
+.dx-frame, .dx-frame * { box-sizing: border-box; }
+.dx-frame { font-family: var(--font-sans); font-size: var(--fs-body); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
+
+/* ============================================================
+   InScope document editor — 1:1 recreation of the current
+   production chrome (Screenshot 2026-07-28, 3024x1964 @2x).
+   Every colour and metric below was sampled from that
+   screenshot, not from the Coin library: this screen is the
+   pre-Coin product UI, so the product's own palette is the
+   source of truth here.
+   ============================================================ */
+.dx-frame {
+  /* ---- colour ---- */
+  --green-900:      #1f4941;   /* app bar */
+  --green-500:      #56a091;   /* primary action / FAB */
+  --green-050:      #e2f1ea;   /* active pill, org avatar */
+  --on-green-muted: #d2dbd9;   /* breadcrumb + org name */
+
+  --text-primary:   #192523;
+  --text-secondary: #71787b;
+  --text-inverse:   #ffffff;
+  --text-doc:       #000000;
+
+  --surface:        #ffffff;
+  --surface-sunken: #f8faf8;   /* editor canvas */
+  --surface-chip:   #f0f0f0;   /* header promo chip */
+  --surface-subtle: #f3f4f4;   /* Share, Draft pill */
+
+  --border-panel:   #e0e0e0;
+  --border-subtle:  #e4e4e4;
+  --border-toolbar: #dee0de;
+  --border-hairline:#f0f0f0;
+
+  --avatar-user:    #c66b62;
+  --dot-alert:      #db423a;
+  --dot-record:     #6bd45f;
+  --handle:         #7f7f7f;
+  --icon-disabled:  #c8c8c8;
+
+  /* ---- type ---- */
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; /* Coin sans */
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --fs-body:   14px;   /* Coin Body/Small — toolbar labels, section list */
+  --fs-small:  12px;   /* Coin Body/XSmall — status pill */
+  --fs-title:  16px;   /* Coin Heading/H5 — "Sections" */
+  --fs-logo:   22px;
+  --fs-doc:    15px;
+  --lh-doc:    18.5px;
+
+  /* ---- metrics ---- */
+  --h-topbar:   33px;
+  --h-appbar:   60px;
+  --h-toolbar:  60px;
+  --w-panel:    307px;
+  --w-page:     898px;
+  --sz-iconbtn: 36px;
+  --r-sm:       6px;
+  --r-md:       8px;
+  --r-lg:       10px;
+  --r-full:     9999px;
+}
+
+
+
+
+
+/* The app fills the embedding iframe; the responsive toolbar now keys off
+   the real viewport width. */
+.dx-frame {
+  position: relative; height: 100%; flex: 1 1 auto; min-width: 0; width: 100%;
+  display: flex; flex-direction: column;
+  background: var(--surface); overflow: hidden;
+}
+.dx-grip {
+  width: 10px; height: 100%; flex: none; cursor: col-resize;
+  background: #dfe2e1; display: flex; align-items: center; justify-content: center;
+  border-left: 1px solid #c9cecd;
+}
+.dx-grip::after { content: ""; width: 4px; height: 42px; border-radius: 2px; background: #9aa3a1; }
+.dx-grip:hover::after { background: #6f7a78; }
+.dx-widthtag {
+  position: fixed; bottom: 14px; right: 18px; z-index: 90;
+  padding: 5px 10px; border-radius: var(--r-full);
+  background: rgba(25,37,35,.82); color: #fff;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .2px;
+  pointer-events: none; opacity: 0; transition: opacity .18s;
+}
+.dx-widthtag.dx-is-visible { opacity: 1; }
+
+/* ---- shared -------------------------------------------------- */
+.dx-i { display: block; flex: none; stroke: currentColor; fill: none;
+     stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dx-i * { vector-effect: non-scaling-stroke; }
+
+.dx-iconbtn {
+  width: var(--sz-iconbtn); height: var(--sz-iconbtn); flex: none;
+  display: flex; align-items: center; justify-content: center;
+  border: 0; padding: 0; background: none; cursor: pointer;
+  border-radius: var(--r-md); color: var(--text-primary);
+}
+.dx-iconbtn:hover { background: var(--surface-subtle); }
+.dx-iconbtn.dx-is-disabled { color: var(--icon-disabled); cursor: default; }
+.dx-iconbtn.dx-is-disabled:hover { background: none; }
+
+.dx-divider { width: 1px; height: 24px; background: var(--border-panel); flex: none; }
+
+/* explicit inter-item offsets: the production toolbar/app bar do not
+   sit on one even rhythm, so each measured gap is declared. */
+.dx-ml2  { margin-left: 2px  } .dx-ml3  { margin-left: 3px  }
+.dx-ml4  { margin-left: 4px  } .dx-ml5  { margin-left: 5px  }
+.dx-ml7  { margin-left: 7px  } .dx-ml8  { margin-left: 8px  }
+.dx-ml9  { margin-left: 9px  } .dx-ml10 { margin-left: 10px }
+.dx-ml11 { margin-left: 11px }
+.dx-ml12 { margin-left: 12px } .dx-ml14 { margin-left: 14px }
+.dx-ml15 { margin-left: 15px } .dx-ml16 { margin-left: 16px }
+.dx-ml18 { margin-left: 18px } .dx-ml21 { margin-left: 21px }
+.dx-ml24 { margin-left: 24px } .dx-ml25 { margin-left: 25px }
+.dx-ml27 { margin-left: 27px } .dx-ml30 { margin-left: 30px }
+.dx-push { margin-left: auto }
+
+/* ---- 1 · OS / browser strip ---------------------------------- */
+.dx-topbar {
+  height: var(--h-topbar); flex: none; background: #000;
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 29px;
+}
+.dx-topbar__dot { width: 7px; height: 7px; border-radius: var(--r-full); background: var(--dot-record); }
+
+/* ---- 2 · App bar --------------------------------------------- */
+.dx-appbar {
+  height: var(--h-appbar); flex: none; background: var(--green-900);
+  display: flex; align-items: center;
+  padding: 0 16px 0 24px; color: var(--text-inverse);
+}
+.dx-logo { flex: none; display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
+.dx-logo__mark { width: 15px; height: 15px; fill: currentColor; flex: none; }
+.dx-logo__word { font-size: var(--fs-logo); font-weight: 700; letter-spacing: -0.4px; line-height: 1; }
+
+.dx-crumbs { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.dx-crumbs__parent { white-space: nowrap; }
+.dx-crumbs__current { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dx-crumbs__parent { color: var(--on-green-muted); flex: none; }
+.dx-crumbs__sep { color: var(--on-green-muted); display: flex; }
+.dx-crumbs__current { font-weight: 700; }
+
+.dx-promo {
+  flex: none; height: 36px; display: flex; align-items: center; gap: 5px;
+  padding: 0 10px; border: 0; cursor: pointer;
+  background: var(--surface-chip); border-radius: var(--r-lg);
+  font-family: var(--font-mono); font-size: var(--fs-small); color: var(--text-primary);
+}
+.dx-promo__emoji { font-size: 14px; line-height: 1; }
+
+.dx-help { position: relative; display: flex; color: var(--text-inverse); cursor: pointer; }
+.dx-help__dot {
+  position: absolute; top: -2px; right: -3px;
+  width: 11px; height: 11px; border-radius: var(--r-full);
+  background: var(--dot-alert); box-shadow: 0 0 0 2.5px var(--green-900);
+}
+.dx-org { color: var(--on-green-muted); font-weight: 700; letter-spacing: 0.2px; }
+.dx-orgavatar {
+  width: 29px; height: 29px; flex: none; border-radius: var(--r-full);
+  background: var(--green-050); color: var(--green-900);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 15px;
+}
+.dx-appbar__caret { color: var(--text-inverse); display: flex; }
+
+/* ---- 3 · Editor toolbar -------------------------------------- */
+.dx-toolbar {
+  position: relative; z-index: 20;
+  height: var(--h-toolbar); flex: none; background: var(--surface);
+  border-bottom: 1px solid var(--border-toolbar);
+  display: flex; align-items: center;
+  padding: 0 27px 0 30px;
+}
+/* Everything between "Normal" and spell-check lives here; groups are
+   moved out to the overflow menu, last group first, as width shrinks. */
+.dx-tflow { display: flex; align-items: center; flex: none; }
+.dx-tgroup { display: flex; align-items: center; }
+
+.dx-overflow { position: relative; display: none; }
+.dx-overflow.dx-is-shown { display: flex; align-items: center; margin-left: 12px; }
+.dx-overflow__btn.dx-is-active { background: var(--green-050); }
+.dx-overflow__menu {
+  position: absolute; top: calc(100% + 8px); left: 50%; z-index: 50;
+  transform: translateX(-50%);
+  display: none; align-items: center; gap: 4px;
+  flex-wrap: nowrap; white-space: nowrap; padding: 8px 10px;
+  background: var(--surface); border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  box-shadow: 0 10px 28px rgba(25,37,35,.16), 0 2px 6px rgba(25,37,35,.08);
+}
+.dx-overflow__menu.dx-is-open { display: flex; }
+/* inside the menu the measured bar offsets are dropped in favour of an even rhythm */
+.dx-overflow__menu .dx-tgroup { gap: 4px; }
+.dx-overflow__menu [class*="ml"] { margin-left: 0; }
+.dx-overflow__menu .dx-divider { margin: 0 4px; }
+/* each group carries its leading divider; as the first item in the popover
+   it has nothing to divide, so it is dropped (set in layout()) */
+.dx-divider.dx-is-hidden { display: none; }
+.dx-tbtn {
+  height: var(--sz-iconbtn); flex: none;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 10px; border: 0; background: none; cursor: pointer;
+  border-radius: var(--r-md); font-family: inherit; font-size: var(--fs-body);
+  color: var(--text-primary); white-space: nowrap;
+}
+.dx-tbtn:hover { background: var(--surface-subtle); }
+.dx-tbtn--active { background: var(--green-050); height: 40px; padding: 0 13px; }
+.dx-tbtn--active:hover { background: var(--green-050); }
+.dx-tbtn--num { padding: 0 12px; font-weight: 700; letter-spacing: 0.4px; }
+
+.dx-saved { color: var(--text-secondary); flex: none; }
+.dx-avatar-user {
+  width: 29px; height: 29px; flex: none; border-radius: var(--r-full);
+  background: var(--avatar-user); color: var(--text-inverse);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.3px;
+}
+.dx-status {
+  height: 34px; flex: none; display: flex; align-items: center; gap: 5px;
+  padding: 0 9px; border: 0; cursor: pointer;
+  background: var(--surface-subtle); border-radius: var(--r-full);
+  font-family: inherit; font-size: var(--fs-small); color: var(--text-primary);
+}
+.dx-status__icon { color: var(--green-500); }
+
+.dx-btn {
+  height: 40px; flex: none; display: flex; align-items: center; gap: 10px;
+  border: 0; cursor: pointer; border-radius: var(--r-md);
+  font-family: inherit; font-size: var(--fs-body); line-height: 1;
+}
+.dx-btn--subtle  { background: var(--surface-subtle); color: var(--text-primary); padding: 0 16px; }
+.dx-btn--primary { background: var(--green-500); color: var(--text-inverse); padding: 0 19px; }
+
+/* ---- 4 · Body ------------------------------------------------ */
+.dx-main { flex: 1 1 auto; display: flex; min-height: 0; }
+
+/* 4a · Sections panel */
+.dx-panel {
+  width: var(--w-panel); flex: none; background: var(--surface);
+  border-right: 1px solid var(--border-panel);
+  display: flex; flex-direction: column; min-height: 0;
+}
+.dx-panel__head {
+  height: 81px; flex: none; display: flex; align-items: center; gap: 7px;
+  padding: 0 26px 0 30px; border-bottom: 1px solid var(--border-panel);
+}
+.dx-panel__title { font-size: var(--fs-title); font-weight: 600; margin: 0; letter-spacing: -0.1px; }
+
+.dx-sections {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 18px 26px;
+}
+.dx-section {
+  display: block; width: 100%; text-align: left;
+  border: 0; background: none; cursor: pointer;
+  font-family: inherit; font-size: var(--fs-body); line-height: 20px;
+  color: var(--text-primary); border-radius: var(--r-md);
+  padding: 15px 46px 15px 14px;   /* right inset leaves the row's action space */
+}
+.dx-section:hover { background: var(--surface-subtle); }
+.dx-section--active,
+.dx-section--active:hover { background: var(--green-050); }
+
+.dx-panel__foot {
+  height: 52px; flex: none; border-top: 1px solid var(--border-hairline);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* 4b · Canvas */
+/* the wrapper never scrolls, so anything pinned to it (the AI button)
+   stays in the corner of the visible editor area */
+.dx-canvas-wrap { position: relative; flex: 1 1 auto; min-width: 0; display: flex; }
+.dx-main.dx-is-collapsed .dx-panel { display: none; }
+.dx-panel-open { display: none; position: absolute; top: 16px; left: 16px; z-index: 5;
+  width: 36px; height: 36px; align-items: center; justify-content: center;
+  border: 1px solid var(--border-panel); background: var(--surface); color: var(--text-primary);
+  border-radius: var(--r-md); box-shadow: 0 2px 8px rgba(25,37,35,.10); cursor: pointer; }
+.dx-panel-open:hover { background: var(--surface-subtle); }
+.dx-main.dx-is-collapsed .dx-panel-open { display: flex; }
+.dx-canvas {
+  flex: 1 1 auto; position: relative; background: var(--surface-sunken);
+  overflow-y: auto; display: flex; justify-content: center;
+}
+.dx-page {
+  width: var(--w-page); flex: none; background: var(--surface);
+  margin-top: 26px; min-height: 1160px;
+  padding: 328px 96px 96px;
+}
+.dx-doc-title {
+  margin: 0; text-align: center; color: var(--text-doc);
+  font-size: var(--fs-doc); line-height: var(--lh-doc); font-weight: 700;
+}
+.dx-canvas__revert { position: absolute; top: 36px; right: 102px; }
+.dx-fab {
+  position: absolute; right: 27px; bottom: 29px;
+  width: 51px; height: 51px; border: 0; cursor: pointer;
+  border-radius: var(--r-full); background: var(--green-500); color: var(--text-inverse);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(25,37,35,0.10);
+}
+.dx-fab__star { width: 22px; height: 22px; fill: currentColor; }
+
+/* ---- 5 · Window drag handle ---------------------------------- */
+.dx-winhandle {
+  position: absolute; left: 50%; transform: translateX(-50%); bottom: 15px;
+  width: 37px; height: 6px; border-radius: 3px; background: var(--handle);
+}
+
+
+/* ============================================================
+   6 · AI Assistant / Penny side panel (pa-*)
+   Star FAB opens it. Views: assistant list, Penny chat.
+   Panel chrome follows the editor's pre-Coin palette; the
+   question cards inside the chat are Coin (carbon buttons,
+   Geist Mono labels, Coin radii/semantic colors).
+   ============================================================ */
+.pa-panel {
+  display: none; width: 400px; flex: none; min-height: 0;
+  background: var(--surface); border-left: 1px solid var(--border-panel);
+  flex-direction: column;
+}
+.dx-main.pa-is-open .pa-panel { display: flex; }
+.dx-main.pa-is-open .dx-fab { display: none; }
+.dx-main.pa-is-open .dx-page { max-width: calc(100% - 48px); }
+
+.pa-view { display: none; flex: 1 1 auto; flex-direction: column; min-height: 0; }
+.pa-view.pa-is-active { display: flex; }
+
+.pa-i { display: block; flex: none; stroke: currentColor; fill: none;
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.pa-i * { vector-effect: non-scaling-stroke; }
+
+/* ---- view 1 · AI Assistant ---- */
+.pa-head { flex: none; display: flex; align-items: center; gap: 12px; padding: 24px 20px 14px 24px; }
+.pa-head__star { width: 22px; height: 22px; fill: var(--green-500); flex: none; }
+.pa-head__title { flex: 1 1 auto; margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -0.2px; }
+
+.pa-body { flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  padding: 0 24px 24px; display: flex; flex-direction: column; gap: 12px; }
+.pa-group { margin: 12px 0 2px; font-size: 17px; font-weight: 700; letter-spacing: -0.1px; }
+.pa-card {
+  display: flex; align-items: flex-start; gap: 16px; text-align: left;
+  padding: 18px 16px; border: 1px solid var(--border-panel); border-radius: var(--r-lg);
+  background: var(--surface); cursor: pointer; font-family: inherit; color: var(--text-primary);
+}
+.pa-card:hover { border-color: #c9cecd; background: var(--surface-sunken); }
+.pa-card__icon { flex: none; margin-top: 2px; }
+.pa-card__text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.pa-card__title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; line-height: 1.35; }
+.pa-card__desc { font-size: 14.5px; line-height: 1.45; color: var(--text-secondary); }
+.pa-beta { flex: none; padding: 3px 8px; border-radius: var(--r-full);
+  background: var(--green-050); color: var(--green-900);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.6px; }
+
+/* ---- view 2 · Penny chat ---- */
+.pa-chat-head { flex: none; display: flex; align-items: center; gap: 4px; padding: 14px 16px 14px 12px; }
+.pa-chat-head__title { flex: 1 1 auto; margin: 0 0 0 6px; font-size: 19px; font-weight: 700; letter-spacing: -0.2px; }
+.pa-chat-head .dx-iconbtn { width: 32px; height: 32px; }
+.pa-iconbtn--muted { color: var(--icon-disabled); }
+
+.pa-chat-body { flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 16px; }
+.pa-intro { padding: 8px 4px 8px; }
+.pa-illo-tile { display: flex; align-items: center; justify-content: center;
+  background: var(--green-050); border-radius: 12px; padding: 30px 16px; margin: 4px 0 28px; }
+.pa-illo { display: block; width: 204px; height: auto; }
+.pa-meet { margin: 0 0 12px; font-size: 20px; font-weight: 700; letter-spacing: -0.2px; }
+.pa-intro p { margin: 0 0 18px; font-size: 15px; line-height: 1.6; }
+.pa-intro ul { margin: 0; padding: 0 0 8px 2px; list-style: none;
+  display: flex; flex-direction: column; gap: 12px; }
+.pa-intro li { position: relative; padding-left: 22px; font-size: 15px; line-height: 1.55; }
+.pa-intro li::before { content: ""; position: absolute; left: 2px; top: 7px;
+  width: 7px; height: 7px; border-radius: 50%; background: var(--green-500); }
+
+/* thread */
+.pa-msg--user { align-self: flex-end; max-width: 88%;
+  background: var(--surface-subtle); border-radius: 12px; padding: 10px 14px;
+  font-size: 14px; line-height: 1.5; }
+.pa-status { display: flex; align-items: center; gap: 8px;
+  font-size: 13.5px; color: var(--green-500); font-weight: 500; }
+.pa-status--done { color: var(--text-primary); font-weight: 400; font-size: 14px; line-height: 1.5; display: block; }
+.pa-spin { animation: pa-spin 0.9s linear infinite; }
+@keyframes pa-spin { to { transform: rotate(360deg); } }
+.pa-msg--sys { font-size: 13px; color: var(--text-secondary); }
+
+/* ---- Coin question card ---- */
+.pa-q { border: 1px solid var(--brand-neutral-200); border-radius: 10px;
+  background: var(--background-surface); padding: 16px;
+  display: flex; flex-direction: column; gap: 14px;
+  color: var(--brand-neutral-carbon); font-size: 14px;
+  /* restore Coin text tokens shadowed by the .dx-frame palette */
+  --pa-muted: #5c5c5c;
+}
+.pa-q__head { display: flex; align-items: baseline; gap: 8px; }
+.pa-q__title { display: inline-flex; align-items: center; gap: 8px;
+  font-size: 16px; font-weight: 600; letter-spacing: -0.1px; }
+.pa-q__title svg { display: none; flex: none; }
+.pa-q__count { flex: none; margin-left: auto; font-size: 12.5px; color: var(--pa-muted); }
+.pa-progress { display: none; height: 3px; border-radius: var(--radius-full);
+  background: var(--brand-neutral-100); overflow: hidden; }
+.pa-progress i { display: block; height: 100%; width: 0;
+  background: var(--semantic-success-text); border-radius: var(--radius-full);
+  transition: width 0.25s; }
+
+.pa-tabs { display: flex; }
+.pa-tab { display: flex; align-items: center; justify-content: center; gap: 6px;
+  border: 0; background: none; cursor: pointer; font-family: inherit;
+  color: var(--pa-muted); font-size: 13.5px; font-weight: 500; }
+.pa-tab:disabled { cursor: default; }
+/* always-visible status dot — grey until answered, green after — so the
+   tab's geometry never changes */
+.pa-tab__dot { width: 6px; height: 6px; border-radius: 50%;
+  background: var(--brand-neutral-300); flex: none; }
+.pa-tab.is-answered .pa-tab__dot { background: var(--semantic-success-text); }
+
+.pa-q__question { font-size: 15px; font-weight: 600; line-height: 1.4; margin: 0; }
+.pa-q__hint { font-size: 13px; color: var(--pa-muted); margin: 4px 0 0; }
+
+.pa-opts { display: flex; flex-direction: column; }
+.pa-opt { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px;
+  cursor: pointer; background: var(--background-surface); }
+.pa-opt__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.pa-opt__title { font-size: 14px; font-weight: 500; line-height: 1.4; }
+.pa-opt__desc { font-size: 12.5px; line-height: 1.45; color: var(--pa-muted); }
+.pa-opt input[type="text"] { display: none; margin-top: 8px; width: 100%; height: 32px;
+  border: 1px solid var(--brand-neutral-300); border-radius: var(--radius-sm);
+  padding: 0 10px; font: 400 13.5px/1 var(--font-sans); color: var(--brand-neutral-carbon);
+  outline: none; background: var(--background-surface); }
+.pa-opt input[type="text"]:focus { border-color: var(--brand-neutral-carbon); }
+.pa-opt.is-selected input[type="text"] { display: block; }
+
+.pa-ctrl { width: 18px; height: 18px; flex: none; margin-top: 1px;
+  border: 1.5px solid var(--brand-neutral-300); background: var(--background-surface);
+  display: grid; place-items: center; }
+.pa-ctrl--radio { border-radius: 50%; }
+.pa-ctrl--check { border-radius: 5px; }
+.pa-ctrl--radio::after { content: ""; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--brand-neutral-carbon); transform: scale(0); }
+.pa-opt.is-selected .pa-ctrl--radio { border-color: var(--brand-neutral-carbon); }
+.pa-opt.is-selected .pa-ctrl--radio::after { transform: scale(1); }
+.pa-ctrl--check svg { display: none; }
+.pa-opt.is-selected .pa-ctrl--check { background: var(--brand-neutral-carbon);
+  border-color: var(--brand-neutral-carbon); }
+.pa-opt.is-selected .pa-ctrl--check svg { display: block; }
+
+.pa-q__err { display: none; font-size: 12.5px; color: var(--semantic-error-text); margin: 0; }
+.pa-q.is-error .pa-q__err { display: block; }
+
+/* review + answered */
+.pa-rev { display: flex; flex-direction: column; }
+.pa-rev__row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+.pa-rev__text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pa-rev__label { font: 500 11px/1.3 var(--font-mono); letter-spacing: 0.6px;
+  text-transform: uppercase; color: var(--pa-muted); }
+.pa-rev__answer { font-size: 14px; font-weight: 500; line-height: 1.45; }
+
+.pa-q__foot { display: flex; align-items: center; gap: 8px; padding-top: 2px; margin-top: auto; }
+.pa-q__foot .pa-spacer { flex: 1 1 auto; }
+.pa-stop { width: 32px; height: 32px; flex: none; cursor: pointer;
+  border: 1px solid var(--brand-neutral-200); background: var(--background-surface);
+  border-radius: var(--radius-sm); display: grid; place-items: center;
+  color: var(--brand-neutral-carbon); }
+.pa-stop:hover { background: var(--brand-neutral-50); border-color: var(--brand-neutral-300); }
+.pa-stop svg { display: block; }
+.pa-btn { height: 32px; padding: 0 14px; border-radius: var(--radius-sm);
+  display: inline-flex; align-items: center; cursor: pointer;
+  font: 500 13px/1 var(--font-mono); border: 1px solid transparent; }
+.pa-btn--ghost { background: none; color: var(--brand-neutral-carbon); padding: 0 10px; }
+.pa-btn--ghost:hover { background: var(--brand-neutral-100); }
+.pa-btn--outline { background: var(--background-surface); color: var(--brand-neutral-carbon);
+  border-color: var(--brand-neutral-200); }
+.pa-btn--outline:hover { background: var(--brand-neutral-50); }
+.pa-btn--primary { background: var(--button-primary-bg); color: var(--text-inverse); }
+.pa-btn--primary:hover { background: #000; }
+.pa-btn--sm { height: 26px; padding: 0 10px; font-size: 12px; }
+
+.pa-answered__head { display: flex; align-items: center; gap: 8px; }
+/* Coin Stepper tick: carbon circle + white check (same spec as ews-parity .gen-step__tick) */
+.pa-tick { width: 20px; height: 20px; flex: none; border-radius: var(--radius-full);
+  display: grid; place-items: center;
+  background: var(--brand-neutral-carbon); color: var(--text-inverse); }
+.pa-answered__title { font-size: 15px; font-weight: 600; }
+.pa-answered__q { font-size: 13.5px; line-height: 1.5; color: var(--pa-muted); margin: 0; }
+.pa-answered__a { font-size: 14px; font-weight: 600; line-height: 1.45; margin: 0; }
+
+/* composer */
+.pa-composer { flex: none; border-top: 1px solid var(--border-hairline); padding: 16px 20px 10px; }
+.pa-inputbox { border: 1px solid var(--border-panel); border-radius: 14px;
+  padding: 14px 12px 10px 14px; display: flex; flex-direction: column; gap: 8px; }
+.pa-inputbox:focus-within { border-color: var(--green-500); }
+.pa-input { border: 0; outline: none; resize: none; padding: 0; min-height: 46px;
+  font-family: inherit; font-size: 15px; line-height: 1.45; color: var(--text-primary);
+  background: transparent; }
+.pa-input::placeholder { color: var(--text-secondary); opacity: 0.75; }
+.pa-inputbox__row { display: flex; align-items: center; }
+.pa-attach { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border: 0; background: none; padding: 0; cursor: pointer; border-radius: var(--r-md);
+  color: var(--text-primary); }
+.pa-attach:hover { background: var(--surface-subtle); }
+.pa-send { margin-left: auto; width: 36px; height: 36px; flex: none;
+  border: 0; border-radius: var(--r-full); cursor: default;
+  background: var(--green-500); color: var(--text-inverse);
+  display: flex; align-items: center; justify-content: center; opacity: 0.45; }
+.pa-send.pa-can-send { opacity: 1; cursor: pointer; }
+.pa-note { margin: 12px 0 2px; text-align: center; font-size: 13px; color: var(--text-secondary); }
+
+/* ---- variant 1 · underline tabs, hairline option rows ---- */
+.pa-tabs { gap: 2px; border-bottom: 1px solid var(--brand-neutral-200); }
+.pa-tab { padding: 8px 10px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.pa-tab.is-active { color: var(--brand-neutral-carbon); font-weight: 600;
+  border-bottom-color: var(--brand-neutral-carbon); }
+.pa-opts { border: 1px solid var(--brand-neutral-200); border-radius: var(--radius-md); overflow: hidden; }
+.pa-opt + .pa-opt { border-top: 1px solid var(--brand-neutral-200); }
+.pa-opt:hover { background: var(--brand-neutral-50); }
+.pa-opt.is-selected { background: var(--brand-neutral-100); }
+.pa-q.is-error .pa-opts { border-color: var(--semantic-error-text); }
+.pa-rev { border: 1px solid var(--brand-neutral-200); border-radius: var(--radius-md); overflow: hidden; }
+.pa-rev__row + .pa-rev__row { border-top: 1px solid var(--brand-neutral-100); }
+
+/* ---- variant 3 extra · Coin gradient header band ---- */
+.pa-q__head { align-items: center; margin: -16px -16px 2px; padding: 12px 16px;
+  /* Coin light/mist gradient (exact stops from the design system) */
+  background: linear-gradient(148.57deg, #F0F9FF 14.645%, #EEEBFF 85.355%);
+  border-radius: 9px 9px 0 0; }
+.pa-q__title { color: var(--brand-indigo-600); font-size: 15px; }
+.pa-q__count { color: var(--brand-indigo-600); opacity: 0.75; }
+/* smaller answered tick in the band variants */
+.pa-tick { width: 16px; height: 16px; }
+.pa-tick svg { width: 10px; height: 10px; }
+
+</style>
+</head>
+<body>
+
+<!-- ============ Left icon rail (host app) ============ -->
+  <aside class="nav">
+    <span class="nav__mark" title="Inscope"><svg viewBox="0 0 300 300" fill="none" aria-hidden="true"><path d="M300 0V200H200V100H100V0H300Z" fill="currentColor"/><path d="M0 300L0 100H100V200H200V300H0Z" fill="currentColor"/></svg></span>
+    <nav class="nav__group">
+      <button class="nav__item is-active" data-nav="portfolio" onclick="event.preventDefault()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+        <span class="nav__label">My Clients</span>
+      </button>
+      <button class="nav__item" onclick="event.preventDefault()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span class="nav__badge">4</span>
+        <span class="nav__label">Task manager</span>
+      </button>
+      <button class="nav__item" data-nav="library" onclick="event.preventDefault()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+        <span class="nav__label">Disclosure Library</span>
+      </button>
+    </nav>
+    <div class="nav__spacer"></div>
+    <div class="nav__bottom">
+      <button class="nav__item" onclick="event.preventDefault()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <span class="nav__label">Theme</span>
+      </button>
+      <button class="nav__item" onclick="event.preventDefault()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        <span class="nav__label">Settings</span>
+      </button>
+      <span class="avatar avatar--32 av-lime" title="Emily Rivera">ER</span>
+    </div>
+  </aside>
+
+<div class="shell">
+<!-- ============ BAR 1 · grey top nav ============ -->
+<header class="topbar">
+  <div class="topbar__nav">
+    <button class="topbar__btn" title="Back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button class="topbar__btn" title="Forward" disabled>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+  <nav class="crumbs">
+    <button class="crumb crumb--client">
+      <span class="avatar avatar--sq av-indigo">
+        <span class="avatar__mono">S</span>
+        <img class="avatar__logo" src="https://www.google.com/s2/favicons?domain=stripe.com&amp;sz=128" alt="" onerror="this.remove()">
+      </span>
+      <span>Stripe</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <span class="crumb__sep">/</span>
+    <span class="crumb crumb--eng">Annual financial statements</span>
+  </nav>
+  <button class="topbar__help" title="Help">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke">
+      <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>
+    </svg>
+    <span class="topbar__help-dot"></span>
+  </button>
+  <!-- prototype only: not part of the product chrome -->
+  <label class="proto-switch">
+    <span>Option</span>
+    <select onchange="if (this.value) location.href = this.value">
+      <option value="../option-1/index.html">Option 1 · Underline tabs</option>
+      <option value="../option-2/index.html">Option 2 · Pill tabs + progress</option>
+      <option value="../option-3/index.html" selected>Option 3 · Header band</option>
+      <option value="../option-4/index.html">Option 4 · Band + hidden composer</option>
+      <option value="../index.html">All options…</option>
+    </select>
+  </label>
+</header>
+
+<div class="doc" id="view-document">
+  <div class="dx-frame" id="dx-frame">
+
+<!-- 1 · OS strip -->
+
+
+<!-- 2 · App bar -->
+
+<!-- 3 · Toolbar -->
+<div class="dx-toolbar">
+  <button class="dx-iconbtn" title="Undo">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M9 14 4 9l5-5"/>
+      <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/>
+    </svg>
+  </button>
+  <button class="dx-iconbtn dx-is-disabled dx-ml7" title="Redo">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="m15 14 5-5-5-5"/>
+      <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5 5.5 5.5 0 0 0 9.5 20H13"/>
+    </svg>
+  </button>
+
+  <button class="dx-tbtn dx-ml14">
+    Insert
+    <svg class="dx-i" width="16" height="16" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+
+  <div class="dx-tflow" id="dx-tflow">
+
+  <span class="dx-tgroup" data-group="format">
+  <span class="dx-divider dx-ml16"></span>
+
+  <button class="dx-tbtn dx-tbtn--active dx-ml12">
+    Normal
+    <svg class="dx-i" width="16" height="16" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+  </span>
+
+  <span class="dx-tgroup" data-group="type">
+  <button class="dx-iconbtn dx-ml3" title="Bold">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"/>
+    </svg>
+  </button>
+  <button class="dx-iconbtn dx-ml7" title="Italic">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M19 4h-9"/><path d="M14 20H5"/><path d="m15 4-6 16"/>
+    </svg>
+  </button>
+  <button class="dx-iconbtn dx-ml7" title="Underline">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M6 4v6a6 6 0 0 0 12 0V4"/><path d="M4 20h16"/>
+    </svg>
+  </button>
+  <!-- lucide: superscript — new control -->
+  <button class="dx-iconbtn dx-ml7" title="Superscript">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="m4 19 8-8"/><path d="m12 19-8-8"/>
+      <path d="M20 12h-4c0-1.5.442-2 1.5-2.5S20 8.334 20 7.002c0-.472-.17-.93-.484-1.29a2.105 2.105 0 0 0-2.617-.436c-.42.239-.738.614-.899 1.06"/>
+    </svg>
+  </button>
+  <button class="dx-iconbtn dx-ml7" title="Highlight">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="m9 11-6 6v3h9l3-3"/>
+      <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>
+    </svg>
+  </button>
+  </span>
+
+  <span class="dx-tgroup" data-group="lists">
+  <span class="dx-divider dx-ml14"></span>
+
+  <!-- lucide: align-left -->
+  <button class="dx-iconbtn dx-ml14" title="Align left">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M21 6H3"/><path d="M15 12H3"/><path d="M17 18H3"/>
+    </svg>
+  </button>
+  <!-- lucide: list -->
+  <button class="dx-iconbtn dx-ml7" title="Bulleted list">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/>
+      <path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/>
+    </svg>
+  </button>
+  <!-- lucide: list-ordered -->
+  <button class="dx-iconbtn dx-ml7" title="Numbered list">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M10 6h11"/><path d="M10 12h11"/><path d="M10 18h11"/>
+      <path d="M4 6h1v4"/><path d="M4 10h2"/>
+      <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>
+    </svg>
+  </button>
+  <!-- lucide: list + chevrons-down-up -->
+  <button class="dx-iconbtn dx-ml7" title="Collapse list">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M3 6h9"/><path d="M3 12h9"/><path d="M3 18h9"/>
+      <path d="m15 5 3 3 3-3"/><path d="m15 19 3-3 3 3"/>
+    </svg>
+  </button>
+  </span>
+
+  <span class="dx-tgroup" data-group="numbers">
+  <span class="dx-divider dx-ml16"></span>
+
+  <button class="dx-tbtn dx-tbtn--num dx-ml5">123</button>
+  <!-- lucide: file-cog -->
+  <button class="dx-iconbtn dx-ml2" title="Document settings">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M15 8a1 1 0 0 1-1-1V2a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8z"/>
+      <path d="M20 8v12a2 2 0 0 1-2 2h-4.182"/>
+      <path d="M4 10.592V4a2 2 0 0 1 2-2h8"/>
+      <circle cx="7" cy="18" r="3"/>
+      <path d="m3.305 19.53.923-.382"/><path d="m4.228 16.852-.924-.383"/>
+      <path d="m5.852 15.228-.383-.923"/><path d="m5.852 20.772-.383.924"/>
+      <path d="m8.148 15.228.383-.923"/><path d="m8.53 21.696-.382-.924"/>
+      <path d="m9.773 16.852.922-.383"/><path d="m9.773 19.148.922.383"/>
+    </svg>
+  </button>
+  </span>
+
+  <span class="dx-tgroup" data-group="proofing">
+  <span class="dx-divider dx-ml14"></span>
+
+  <!-- lucide: spell-check-2 -->
+  <button class="dx-iconbtn dx-ml12" title="Spell check">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="m6 16 6-12 6 12"/><path d="M8 12h8"/>
+      <path d="m16 20 2 2 4-4"/>
+    </svg>
+  </button>
+  </span>
+
+  </div><!-- /.tflow -->
+
+  <!-- Overflow: appears only once a group has been collapsed -->
+  <div class="dx-overflow" id="dx-overflow">
+    <button class="dx-iconbtn dx-overflow__btn" id="dx-overflowBtn"
+            aria-haspopup="true" aria-expanded="false" title="More formatting">
+      <!-- lucide: ellipsis-vertical -->
+      <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+        <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+      </svg>
+    </button>
+    <div class="dx-overflow__menu" id="dx-overflowMenu" role="menu"></div>
+  </div>
+
+  <span class="dx-saved dx-push">Saved</span>
+  <span class="dx-avatar-user dx-ml21">DS</span>
+
+  <button class="dx-status dx-ml16">
+    <!-- lucide: contrast -->
+    <svg class="dx-i dx-status__icon" width="15" height="15" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 18a6 6 0 0 0 0-12v12z" fill="currentColor" stroke="none"/>
+    </svg>
+    Draft
+    <svg class="dx-i" width="14" height="14" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+
+  <!-- lucide: briefcase-business -->
+  <button class="dx-iconbtn dx-ml15" title="Engagement">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+      <rect width="20" height="14" x="2" y="6" rx="2"/>
+      <path d="M22 13a18.15 18.15 0 0 1-20 0"/>
+      <path d="M12 12h.01"/>
+    </svg>
+  </button>
+  <!-- lucide: message-circle -->
+  <button class="dx-iconbtn dx-ml7" title="Comments">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+    </svg>
+  </button>
+  <!-- lucide: clock -->
+  <button class="dx-iconbtn dx-ml7" title="Version history">
+    <svg class="dx-i" width="21" height="21" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+    </svg>
+  </button>
+
+  <button class="dx-btn dx-btn--subtle dx-ml16">Share</button>
+  <button class="dx-btn dx-btn--primary dx-ml10">
+    Download
+    <svg class="dx-i" width="16" height="16" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+</div>
+
+<!-- 4 · Body -->
+<div class="dx-main">
+
+  <aside class="dx-panel">
+    <div class="dx-panel__head">
+      <h2 class="dx-panel__title">Sections</h2>
+      <button class="dx-iconbtn dx-push" title="Insert section above">
+        <svg class="dx-i" width="20" height="20" viewBox="0 0 24 24">
+          <path d="M3 6h8"/><path d="M3 12h10"/><path d="M3 18h8"/>
+          <path d="M17 3v8"/><path d="M13 7h8"/>
+        </svg>
+      </button>
+      <button class="dx-iconbtn" title="Insert section below">
+        <svg class="dx-i" width="20" height="20" viewBox="0 0 24 24">
+          <path d="M3 6h10"/><path d="M3 12h8"/><path d="M3 18h8"/>
+          <path d="M17 13v8"/><path d="M13 17h8"/>
+        </svg>
+      </button>
+      <button class="dx-iconbtn" title="Collapse panel" onclick="dxToggleSections()">
+        <svg class="dx-i" width="20" height="20" viewBox="0 0 24 24">
+          <rect width="18" height="18" x="3" y="3" rx="2"/>
+          <path d="M9 3v18"/><path d="m16 15-3-3 3-3"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="dx-sections">
+      <button class="dx-section dx-section--active">Cover page</button>
+      <button class="dx-section">Table of contents</button>
+      <button class="dx-section">Report of Independent Registered Public Account...</button>
+      <button class="dx-section">Balance Sheets</button>
+      <button class="dx-section">Statements of Operations</button>
+      <button class="dx-section">Statements of Changes in Stockholders' Deficit</button>
+      <button class="dx-section">Statements of Cash Flows</button>
+      <button class="dx-section">Notes to Financial Statements</button>
+    </nav>
+
+    <div class="dx-panel__foot">Page 1 of 25</div>
+  </aside>
+
+  <div class="dx-canvas-wrap">
+  <button class="dx-panel-open" title="Show sections" onclick="dxToggleSections()">
+    <svg class="dx-i" width="20" height="20" viewBox="0 0 24 24">
+      <rect width="18" height="18" x="3" y="3" rx="2"/>
+      <path d="M9 3v18"/><path d="m14 9 3 3-3 3"/>
+    </svg>
+  </button>
+  <div class="dx-canvas">
+    <div class="dx-page">
+      <p class="dx-doc-title">
+        Advanced Solutions Corp.<br>
+        CONSOLIDATED FINANCIAL STATEMENTS<br>
+        December 31, 2025 and 2024
+      </p>
+    </div>
+
+    <button class="dx-iconbtn dx-canvas__revert" title="Reset section">
+      <svg class="dx-i" width="20" height="20" viewBox="0 0 24 24">
+        <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+        <path d="M20 10V8a4 4 0 0 0-4-4h-5"/>
+        <path d="m14 1-3 3 3 3"/>
+      </svg>
+    </button>
+
+  </div><!-- /.canvas -->
+
+    <button class="dx-fab" title="Ask InScope AI" onclick="paOpen()">
+      <!-- lucide: sparkle (filled) -->
+      <svg class="dx-fab__star" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/>
+      </svg>
+    </button>
+  </div>
+
+  <aside class="pa-panel" id="pa-panel">
+
+    <!-- View 1 · AI Assistant -->
+    <div class="pa-view pa-is-active" data-view="assistant">
+      <div class="pa-head">
+        <svg class="pa-head__star" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/>
+        </svg>
+        <h2 class="pa-head__title">AI Assistant</h2>
+        <button class="dx-iconbtn" title="Close" onclick="paClose()">
+          <svg class="pa-i" width="20" height="20" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="pa-body">
+        <div class="pa-group">To start</div>
+
+        <button class="pa-card" onclick="paShow('chat')">
+          <!-- lucide: smile-plus -->
+          <svg class="pa-i pa-card__icon" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M22 11v1a10 10 0 1 1-9-10"/>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+            <line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>
+            <path d="M16 5h6"/><path d="M19 2v6"/>
+          </svg>
+          <span class="pa-card__text">
+            <span class="pa-card__title">Ask Penny</span>
+            <span class="pa-card__desc">Help with drafting, structuring, and clarifying your financials.</span>
+          </span>
+        </button>
+
+        <button class="pa-card">
+          <!-- lucide: captions -->
+          <svg class="pa-i pa-card__icon" width="24" height="24" viewBox="0 0 24 24">
+            <rect width="18" height="14" x="3" y="5" rx="2" ry="2"/>
+            <path d="M7 15h4"/><path d="M15 15h2"/><path d="M7 11h2"/><path d="M13 11h4"/>
+          </svg>
+          <span class="pa-card__text">
+            <span class="pa-card__title">Run footing check</span>
+            <span class="pa-card__desc">Check for incorrect footing calculations.</span>
+          </span>
+        </button>
+
+        <button class="pa-card">
+          <!-- lucide: square-asterisk -->
+          <svg class="pa-i pa-card__icon" width="24" height="24" viewBox="0 0 24 24">
+            <rect width="18" height="18" x="3" y="3" rx="2"/>
+            <path d="M12 8v8"/><path d="m8.5 14 7-4"/><path d="m8.5 10 7 4"/>
+          </svg>
+          <span class="pa-card__text">
+            <span class="pa-card__title">Run inconsistency check</span>
+            <span class="pa-card__desc">Check for value discrepancies.</span>
+          </span>
+        </button>
+
+        <button class="pa-card">
+          <!-- lucide: list-collapse -->
+          <svg class="pa-i pa-card__icon" width="24" height="24" viewBox="0 0 24 24">
+            <path d="m3 10 2.5-2.5L3 5"/><path d="m3 19 2.5-2.5L3 14"/>
+            <path d="M10 6h11"/><path d="M10 12h11"/><path d="M10 18h11"/>
+          </svg>
+          <span class="pa-card__text">
+            <span class="pa-card__title">Run a disclosure review</span>
+            <span class="pa-card__desc">Check for missing or incomplete disclosures.</span>
+          </span>
+        </button>
+
+        <div class="pa-group">Final check</div>
+
+        <button class="pa-card">
+          <!-- lucide: wand-sparkles -->
+          <svg class="pa-i pa-card__icon" width="24" height="24" viewBox="0 0 24 24">
+            <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/>
+            <path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/>
+            <path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>
+          </svg>
+          <span class="pa-card__text">
+            <span class="pa-card__title">Table formatting <span class="pa-beta">BETA</span></span>
+            <span class="pa-card__desc">Check for styling and formatting issues in tables.</span>
+          </span>
+        </button>
+
+        <button class="pa-card">
+          <!-- lucide: book-open-check -->
+          <svg class="pa-i pa-card__icon" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M12 21V7"/><path d="m16 12 2 2 4-4"/>
+            <path d="M22 6V4a1 1 0 0 0-1-1h-5a4 4 0 0 0-4 4 4 4 0 0 0-4-4H3a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h6a3 3 0 0 1 3 3 3 3 0 0 1 3-3h6a1 1 0 0 0 1-1v-2"/>
+          </svg>
+          <span class="pa-card__text">
+            <span class="pa-card__title">Proofread</span>
+            <span class="pa-card__desc">Spelling, punctuation, grammar.</span>
+          </span>
+        </button>
+
+        <div class="pa-group">Get help</div>
+
+        <button class="pa-card">
+          <!-- lucide: hand -->
+          <svg class="pa-i pa-card__icon" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/>
+            <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/>
+            <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/>
+            <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+          </svg>
+          <span class="pa-card__text">
+            <span class="pa-card__title">Get Help</span>
+            <span class="pa-card__desc">Access support resources.</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- View 2 · Penny chat -->
+    <div class="pa-view" data-view="chat">
+      <div class="pa-chat-head">
+        <button class="dx-iconbtn" title="Back" onclick="paShow('assistant')">
+          <svg class="pa-i" width="20" height="20" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        </button>
+        <h2 class="pa-chat-head__title">New Chat</h2>
+        <button class="dx-iconbtn pa-iconbtn--muted" title="New chat">
+          <svg class="pa-i" width="20" height="20" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        </button>
+        <button class="dx-iconbtn" title="Chat history">
+          <svg class="pa-i" width="20" height="20" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+        </button>
+      </div>
+
+      <div class="pa-chat-body" id="pa-chat-body">
+        <div class="pa-intro" id="pa-intro">
+          <div class="pa-illo-tile">
+            <svg class="pa-illo" viewBox="0 0 208 150" fill="none" aria-hidden="true">
+              <g stroke="#39433f" stroke-width="1.5">
+                <rect x="10" y="8" width="120" height="82" rx="4" fill="#fff"/>
+                <line x1="24" y1="24" x2="72" y2="24"/>
+                <circle cx="82" cy="24" r="4" stroke="#56a091"/>
+                <line x1="24" y1="38" x2="72" y2="38"/>
+                <circle cx="82" cy="38" r="4" stroke="#56a091"/>
+                <circle cx="110" cy="28" r="9" stroke="#1f4941"/>
+              </g>
+              <circle cx="82" cy="24" r="1.6" fill="#56a091"/>
+              <circle cx="82" cy="38" r="1.6" fill="#56a091"/>
+              <circle cx="110" cy="28" r="3.8" fill="#1f4941"/>
+              <g stroke="#56a091" stroke-width="1.5">
+                <rect x="152" y="30" width="34" height="72" rx="4" fill="#fff"/>
+                <rect x="159" y="39" width="20" height="10" rx="2"/>
+                <rect x="159" y="55" width="20" height="10" rx="2"/>
+                <rect x="159" y="71" width="20" height="10" rx="2"/>
+              </g>
+              <g stroke="#39433f" stroke-width="1.5">
+                <rect x="42" y="34" width="76" height="102" rx="4" fill="#fff"/>
+                <rect x="56" y="48" width="34" height="12" rx="2"/>
+                <line x1="56" y1="74" x2="104" y2="74"/>
+                <line x1="56" y1="86" x2="104" y2="86"/>
+                <line x1="56" y1="98" x2="104" y2="98"/>
+                <line x1="56" y1="110" x2="88" y2="110"/>
+              </g>
+              <circle cx="128" cy="102" r="26" fill="#56a091" fill-opacity="0.12"/>
+              <g stroke="#3f8577" stroke-width="4" stroke-linecap="round">
+                <circle cx="128" cy="102" r="26" fill="none"/>
+                <line x1="147" y1="121" x2="166" y2="139"/>
+              </g>
+            </svg>
+          </div>
+          <h3 class="pa-meet">Meet Penny</h3>
+          <p>I'm Penny. I can answer questions about your document and search trusted sources like the SEC and FASB so you don't have to.</p>
+          <p>You can ask me to:</p>
+          <ul>
+            <li>Answer questions about your draft</li>
+            <li>Help explain disclosure requirements based on the latest guidance</li>
+            <li>Spot inconsistencies or errors in your financials</li>
+            <li>Search the SEC or FASB for relevant guidance and examples</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pa-composer">
+        <div class="pa-inputbox">
+          <textarea class="pa-input" id="pa-input" rows="2" placeholder="Ask any question..."></textarea>
+          <div class="pa-inputbox__row">
+            <button class="pa-attach" title="Attach a file">
+              <svg class="pa-i" width="20" height="20" viewBox="0 0 24 24"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+            <button class="pa-send" id="pa-send" title="Send" onclick="paSubmitInput()">
+              <svg class="pa-i" width="18" height="18" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="pa-note">AI agent can make mistakes, please verify.</div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+</div><!-- /.frame -->
+</div>
+</div>
+
+<script>
+/* section panel collapse + active section — from the host app's main script */
+function dxToggleSections() {
+  const m = document.querySelector('.dx-main');
+  if (m) m.classList.toggle('dx-is-collapsed');
+}
+document.addEventListener('click', (e) => {
+  const s = e.target.closest && e.target.closest('.dx-section');
+  if (s) {
+    document.querySelectorAll('.dx-section--active').forEach(x => x.classList.remove('dx-section--active'));
+    s.classList.add('dx-section--active');
+  }
+});
+</script>
+
+<script id="dx-editor-script">
+
+/* ------------------------------------------------------------------
+   Responsive editor toolbar
+   Groups between "Normal" and spell-check collapse into the ⋮ menu,
+   last group first, as the frame narrows. Below the point where every
+   group has collapsed the bar simply stops adapting — that width is
+   already unusable in practice.
+   ------------------------------------------------------------------ */
+(function () {
+  const toolbar  = document.querySelector('.dx-toolbar');
+  const flow     = document.getElementById('dx-tflow');
+  const overflow = document.getElementById('dx-overflow');
+  const btn      = document.getElementById('dx-overflowBtn');
+  const menu     = document.getElementById('dx-overflowMenu');
+  const order    = Array.from(flow.children);       // collapse order = reverse of this
+  const MIN_GAP  = 12;                              // breathing room before "Saved"
+
+  /* Measured fit test. scrollWidth is unreliable here (auto margins +
+     right padding), so the row is summed explicitly. */
+  function fits() {
+    const cs = getComputedStyle(toolbar);
+    let w = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + MIN_GAP;
+    for (const el of toolbar.children) {
+      const st = getComputedStyle(el);
+      if (st.display === 'none') continue;
+      w += el.getBoundingClientRect().width;
+      if (!el.classList.contains('dx-push')) w += parseFloat(st.marginLeft) || 0;
+    }
+    return w <= toolbar.clientWidth;
+  }
+
+  function layout() {
+    order.forEach(g => flow.appendChild(g));        // restore everything, in order
+    overflow.classList.remove('dx-is-shown');
+
+    if (fits()) { closeMenu(); return; }
+
+    overflow.classList.add('dx-is-shown');             // the ⋮ itself takes room
+    let i = order.length;
+    while (i > 0 && !fits()) menu.prepend(order[--i]);
+    trimLeadingDivider();
+  }
+
+  /* the first group in the popover has nothing to its left to divide */
+  function trimLeadingDivider() {
+    toolbar.querySelectorAll('.dx-divider.dx-is-hidden')
+           .forEach(d => d.classList.remove('dx-is-hidden'));
+    const first = menu.firstElementChild && menu.firstElementChild.firstElementChild;
+    if (first && first.classList.contains('dx-divider')) first.classList.add('dx-is-hidden');
+  }
+
+  function closeMenu() {
+    menu.classList.remove('dx-is-open');
+    btn.classList.remove('dx-is-active');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+  /* One row, centred under the ⋮. It only wraps if a single row is
+     physically wider than the frame; either way it is nudged back inside
+     the frame if it would hang off an edge. */
+  function positionMenu() {
+    const f = document.getElementById('dx-frame').getBoundingClientRect();
+    menu.style.transform = 'translateX(-50%)';
+    menu.style.flexWrap  = 'nowrap';
+    menu.style.maxWidth  = 'none';
+
+    if (menu.getBoundingClientRect().width > f.width - 16) {
+      menu.style.flexWrap = 'wrap';
+      menu.style.maxWidth = (f.width - 16) + 'px';
+    }
+    const m = menu.getBoundingClientRect();
+    let dx = 0;
+    if (m.left  < f.left  + 8) dx = (f.left  + 8) - m.left;
+    else if (m.right > f.right - 8) dx = (f.right - 8) - m.right;
+    if (dx) menu.style.transform = 'translateX(calc(-50% + ' + dx + 'px))';
+  }
+
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = menu.classList.toggle('dx-is-open');
+    btn.classList.toggle('dx-is-active', open);
+    btn.setAttribute('aria-expanded', String(open));
+    if (open) positionMenu();
+  });
+  menu.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+  /* Breadcrumb parent returns to the engagement in the host app. */
+  const crumbBack = document.getElementById('dx-crumbBack');
+  if (crumbBack) crumbBack.addEventListener('click', () => {
+    if (window.go) window.go('engagement');
+  });
+
+  /* Re-run layout whenever the embedding frame changes size. */
+  const frame = document.getElementById('dx-frame');
+  new ResizeObserver(layout).observe(frame);
+  window.addEventListener('resize', layout);
+  layout();
+})();
+
+</script>
+
+<script id="pa-panel-script">
+/* ================= AI Assistant / Penny panel ================= */
+function paOpen()  { document.querySelector('.dx-main').classList.add('pa-is-open'); }
+function paClose() { document.querySelector('.dx-main').classList.remove('pa-is-open'); }
+function paShow(v) {
+  document.querySelectorAll('.pa-view').forEach(x => x.classList.toggle('pa-is-active', x.dataset.view === v));
+  if (v === 'chat') { const t = document.getElementById('pa-input'); if (t) t.focus(); }
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && e.target.id !== 'pa-input' &&
+      document.querySelector('.dx-main').classList.contains('pa-is-open')) paClose();
+});
+
+/* ================= chat engine ================= */
+const paBody  = document.getElementById('pa-chat-body');
+const paInput = document.getElementById('pa-input');
+const paSendB = document.getElementById('pa-send');
+
+paInput.addEventListener('input', () =>
+  paSendB.classList.toggle('pa-can-send', paInput.value.trim().length > 0));
+paInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); paSubmitInput(); }
+});
+
+function paSubmitInput() {
+  const text = paInput.value.trim();
+  if (!text) return;
+  paInput.value = '';
+  paSendB.classList.remove('pa-can-send');
+  document.getElementById('pa-intro').style.display = 'none';
+
+  paAppend(el('div', 'pa-msg--user', esc(text)));
+
+  const one   = /\b(1|one)\b/i.test(text) && /question/i.test(text);
+  const multi = /multi|multiple|several|many/i.test(text);
+
+  if (!one && !multi) {
+    setTimeout(() => paAppend(el('div', 'pa-msg--sys',
+      'This prototype responds to “one question” or “multi question”.')), 500);
+    return;
+  }
+
+  const status = el('div', 'pa-status',
+    '<svg class="pa-i pa-spin" width="15" height="15" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>' +
+    '<span>Reviewing your document for integrity…</span>');
+  setTimeout(() => paAppend(status), 450);
+  setTimeout(() => {
+    status.className = 'pa-status pa-status--done';
+    status.textContent = multi
+      ? 'I can answer this, but I need your input on a few things first.'
+      : 'Now I have enough context to ask a meaningful financial question about the document.';
+    const wiz = paWizard(multi ? PA_MULTI : PA_ONE);
+    paAppend(wiz);
+    paComposerShow(false);
+    /* land with the card's top in view, not scrolled past it */
+    requestAnimationFrame(() => {
+      paBody.scrollTop = wiz.getBoundingClientRect().top - paBody.getBoundingClientRect().top + paBody.scrollTop - 12;
+    });
+  }, 2100);
+}
+
+/* variant 4: the composer hides while a question card is in progress */
+function paComposerShow(show) {
+  if (PA_VARIANT !== 4) return;
+  document.querySelector('.pa-composer').style.display = show ? '' : 'none';
+}
+
+function el(tag, cls, html) { const n = document.createElement(tag); if (cls) n.className = cls; if (html) n.innerHTML = html; return n; }
+function esc(s) { return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function paAppend(node) { paBody.appendChild(node); paBody.scrollTop = paBody.scrollHeight; }
+
+const PA_VARIANT = 3;
+/* lucide: circle-help — leads the header band title in variant 3 */
+const PA_Q_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>';
+const PA_STOP_BTN = '<button class="pa-stop" data-act="stop" title="Stop">' +
+  '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><rect width="12" height="12" rx="2.5" fill="currentColor"/></svg></button>';
+
+/* ================= question data ================= */
+const PA_ONE = { multiQ: false, questions: [{
+  tab: 'Question',
+  q: 'Hobart Holdings’ MD&A reports a 10% year-over-year revenue increase, and accounts receivable of $8,300 appears for the first time in FY2024. How would you characterize this balance?',
+  hint: 'Choose one', multi: false,
+  opts: [
+    { t: 'Acquisition-related receivables', d: 'Balances assumed through the FY2024 acquisition.' },
+    { t: 'Organic revenue growth', d: 'New receivables from expanded sales activity.' },
+    { t: 'Reclassification', d: 'Moved from another balance sheet line item.' },
+    { t: 'Other', other: true }
+  ]
+}]};
+
+const PA_MULTI = { multiQ: true, questions: [
+  { tab: 'Scope',
+    q: 'Which financial statements should Penny review?', hint: 'Choose any that apply', multi: true,
+    opts: [
+      { t: 'Consolidated statement of operations and comprehensive income', d: 'Revenue, expenses, and earnings.' },
+      { t: 'Balance sheet', d: 'Assets, liabilities, and equity.' },
+      { t: 'Statement of cash flows', d: 'Operating, investing, and financing activity.' },
+      { t: 'Other', other: true }
+    ] },
+  { tab: 'Period',
+    q: 'Which reporting period should Penny use?', hint: 'Choose one', multi: false,
+    opts: [
+      { t: 'Current quarter', d: 'Use the latest quarter.' },
+      { t: 'Year to date', d: 'Include all current-year activity.' },
+      { t: 'Other', other: true }
+    ] },
+  { tab: 'Detail',
+    q: 'How detailed should Penny’s answer be?', hint: 'Choose one', multi: false,
+    opts: [
+      { t: 'High-level summary', d: 'Key takeaways in a few sentences.' },
+      { t: 'Standard', d: 'Balanced detail with supporting figures.' },
+      { t: 'Deep dive', d: 'Line-item analysis with full workings.' }
+    ] },
+  { tab: 'Audience',
+    q: 'Who is the answer for?', hint: 'Choose one', multi: false,
+    opts: [
+      { t: 'Internal team', d: 'Working notes for preparers.' },
+      { t: 'Management', d: 'A summary for executives.' },
+      { t: 'External reviewers', d: 'Auditors and regulators.' }
+    ] }
+]};
+
+/* ================= wizard ================= */
+function paWizard(cfg) {
+  const n = cfg.questions.length;
+  const state = { i: 0, onReview: false, sawReview: false,
+                  answers: cfg.questions.map(() => ({ sel: new Set(), other: '' })) };
+  const card = el('div', 'pa-q');
+  card.setAttribute('data-ds', 'Penny question card');
+  card.setAttribute('data-ds-variant', cfg.multiQ ? 'Multi question' : 'One question');
+
+  const answeredCount = () => state.answers.filter(a => a.sel.size > 0).length;
+  const isAnswered = i => state.answers[i].sel.size > 0;
+
+  function answerText(i) {
+    const q = cfg.questions[i], a = state.answers[i];
+    return [...a.sel].sort((x, y) => x - y).map(k =>
+      q.opts[k].other ? ('Other — ' + (a.other || '…')) : q.opts[k].t).join(', ');
+  }
+
+  function build() {
+    const allDone = answeredCount() === n;
+    let h = '';
+
+    if (cfg.multiQ || PA_VARIANT >= 3) {
+      h += '<div class="pa-q__head"><span class="pa-q__title">' + PA_Q_ICON +
+           (state.onReview ? 'Review' : 'Penny needs your input') + '</span>' +
+           (cfg.multiQ ? '<span class="pa-q__count">' + answeredCount() + ' of ' + n + ' answered</span>' : '') +
+           '</div>';
+    }
+    if (cfg.multiQ) {
+      h += '<div class="pa-progress"><i style="width:' + (answeredCount() / n * 100) + '%"></i></div>';
+      if (!state.onReview) h += '<div class="pa-tabs">' + cfg.questions.map((q, i) =>
+        '<button class="pa-tab' + (i === state.i ? ' is-active' : '') + (isAnswered(i) ? ' is-answered' : '') + '"' +
+        ' data-tab="' + i + '">' +
+        '<span class="pa-tab__dot"></span>' + q.tab + '</button>').join('') + '</div>';
+    }
+
+    if (state.onReview) {
+      h += '<div class="pa-rev">' + cfg.questions.map((q, i) =>
+        '<div class="pa-rev__row"><div class="pa-rev__text">' +
+        '<span class="pa-rev__label">' + q.tab + '</span>' +
+        '<span class="pa-rev__answer">' + esc(answerText(i)) + '</span></div>' +
+        '<button class="pa-btn pa-btn--ghost pa-btn--sm" data-edit="' + i + '">Edit</button></div>').join('') + '</div>';
+      h += '<div class="pa-q__foot">' + PA_STOP_BTN + '<span class="pa-spacer"></span>' +
+           '<button class="pa-btn pa-btn--outline" data-act="back">Back</button>' +
+           '<button class="pa-btn pa-btn--primary" data-act="submit">Submit</button></div>';
+    } else {
+      const q = cfg.questions[state.i], a = state.answers[state.i];
+      h += '<p class="pa-q__question">' + esc(q.q) + '</p>';
+      h += '<div class="pa-opts">' + q.opts.map((o, k) => {
+        const sel = a.sel.has(k);
+        return '<label class="pa-opt' + (sel ? ' is-selected' : '') + '" data-opt="' + k + '">' +
+          '<span class="pa-ctrl ' + (q.multi ? 'pa-ctrl--check' : 'pa-ctrl--radio') + '">' +
+          (q.multi ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' : '') +
+          '</span><span class="pa-opt__text"><span class="pa-opt__title">' + esc(o.t) + '</span>' +
+          (o.d ? '<span class="pa-opt__desc">' + esc(o.d) + '</span>' : '') +
+          (o.other ? '<input type="text" placeholder="Tell Penny more…" value="' + esc(a.other) + '">' : '') +
+          '</span></label>';
+      }).join('') + '</div>';
+      h += '<p class="pa-q__err" id="pa-err"></p>';
+
+      const primary = !cfg.multiQ ? 'Submit'
+        : !allDone ? 'Next'
+        : (state.sawReview ? 'Submit' : 'Review');
+      h += '<div class="pa-q__foot">' + PA_STOP_BTN + '<span class="pa-spacer"></span>' +
+           (cfg.multiQ && state.i > 0 ? '<button class="pa-btn pa-btn--outline" data-act="back">Back</button>' : '') +
+           '<button class="pa-btn pa-btn--primary" data-act="next">' + primary + '</button></div>';
+    }
+
+    return h;
+  }
+
+  function render() { card.classList.remove('is-error'); card.innerHTML = build(); }
+
+  /* pre-measure the tallest question pane and lock it in as the card's
+     min-height, so switching tabs never changes the card's length */
+  function lockHeight() {
+    if (!cfg.multiQ || !card.parentNode) return;
+    const keep = { i: state.i, onReview: state.onReview };
+    const probe = el('div', 'pa-q');
+    probe.style.cssText = 'position:absolute; left:-9999px; top:0; visibility:hidden; width:' +
+      card.getBoundingClientRect().width + 'px;';
+    card.parentNode.appendChild(probe);
+    let max = 0;
+    state.onReview = false;
+    for (let k = 0; k < n; k++) {
+      state.i = k;
+      /* measure each pane at its tallest: every option selected (multi) or
+         "Other" selected (radio), so the inline text input is counted too */
+      const q = cfg.questions[k], a = state.answers[k];
+      const saveSel = new Set(a.sel);
+      const otherIdx = q.opts.findIndex(o => o.other);
+      if (q.multi) q.opts.forEach((_, x) => a.sel.add(x));
+      else if (otherIdx >= 0) { a.sel.clear(); a.sel.add(otherIdx); }
+      probe.innerHTML = build();
+      max = Math.max(max, probe.offsetHeight);
+      a.sel = saveSel;
+    }
+    probe.remove();
+    state.i = keep.i; state.onReview = keep.onReview;
+    if (max) card.style.minHeight = max + 'px';
+  }
+
+  function validate() {
+    const q = cfg.questions[state.i], a = state.answers[state.i];
+    const otherIdx = q.opts.findIndex(o => o.other);
+    let msg = '';
+    if (a.sel.size === 0) msg = 'Select an option to continue.';
+    else if (otherIdx >= 0 && a.sel.has(otherIdx) && !a.other.trim()) msg = 'Add a short answer to continue.';
+    if (msg) {
+      card.classList.add('is-error');
+      const e = card.querySelector('#pa-err'); if (e) e.textContent = msg;
+      return false;
+    }
+    return true;
+  }
+
+  function finish() {
+    paComposerShow(true);
+    const done = el('div', 'pa-q');
+    done.setAttribute('data-ds', 'Penny question card');
+    done.setAttribute('data-ds-variant', cfg.multiQ ? 'Multi question' : 'One question');
+    done.setAttribute('data-ds-state', 'Answered');
+    let h = '<div class="pa-answered__head">' +
+      '<span class="pa-tick"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"><path d="M20 6 9 17l-5-5"/></svg></span>' +
+      '<span class="pa-answered__title">Answered ' + (cfg.multiQ ? n + ' questions' : '1 question') + '</span></div>';
+    if (cfg.multiQ) {
+      h += '<div class="pa-rev">' + cfg.questions.map((q, i) =>
+        '<div class="pa-rev__row"><div class="pa-rev__text">' +
+        '<span class="pa-rev__label">' + q.tab + '</span>' +
+        '<span class="pa-rev__answer">' + esc(answerText(i)) + '</span></div></div>').join('') + '</div>';
+    } else {
+      h += '<p class="pa-answered__q">' + esc(cfg.questions[0].q) + '</p>' +
+           '<p class="pa-answered__a">' + esc(answerText(0)) + '</p>';
+    }
+    done.innerHTML = h;
+    card.replaceWith(done);
+    const status = el('div', 'pa-status',
+      '<svg class="pa-i pa-spin" width="15" height="15" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>' +
+      '<span>Working on your answer…</span>');
+    setTimeout(() => paAppend(status), 400);
+    setTimeout(() => {
+      status.className = 'pa-status pa-status--done';
+      status.textContent = 'Got it — I’ll use these inputs to draft the answer.';
+    }, 2400);
+  }
+
+  card.addEventListener('click', e => {
+    const opt = e.target.closest('.pa-opt');
+    if (opt && !e.target.closest('input[type="text"]')) {
+      e.preventDefault();
+      const k = +opt.dataset.opt;
+      const q = cfg.questions[state.i], a = state.answers[state.i];
+      if (q.multi) { a.sel.has(k) ? a.sel.delete(k) : a.sel.add(k); }
+      else { a.sel.clear(); a.sel.add(k); }
+      render();
+      if (q.opts[k].other && a.sel.has(k)) {
+        const inp = card.querySelector('.pa-opt.is-selected input[type="text"]');
+        if (inp) inp.focus({ preventScroll: true });
+      }
+      return;
+    }
+    const tab = e.target.closest('.pa-tab');
+    if (tab) { state.i = +tab.dataset.tab; state.onReview = false; render(); return; }
+    const edit = e.target.closest('[data-edit]');
+    if (edit) { state.onReview = false; state.i = +edit.dataset.edit; render(); return; }
+    const act = e.target.closest('[data-act]');
+    if (!act) return;
+    if (act.dataset.act === 'stop') {
+      card.replaceWith(el('div', 'pa-msg--sys', 'Input request stopped — Penny will answer without it.'));
+      paComposerShow(true);
+      return;
+    }
+    if (act.dataset.act === 'back') {
+      if (state.onReview) { state.onReview = false; state.i = n - 1; }
+      else { state.i -= 1; }
+      render(); return;
+    }
+    if (act.dataset.act === 'submit') { finish(); return; }
+    /* primary on a question pane: Next → next/first unanswered · Review (first time all answered) · Submit */
+    if (!validate()) return;
+    if (!cfg.multiQ) { finish(); return; }
+    if (answeredCount() < n) {
+      state.i = state.i < n - 1 ? state.i + 1 : cfg.questions.findIndex((_, k) => !isAnswered(k));
+    } else if (!state.sawReview) { state.onReview = true; state.sawReview = true; }
+    else { finish(); return; }
+    render();
+  });
+
+  card.addEventListener('input', e => {
+    if (e.target.matches('.pa-opt input[type="text"]')) {
+      state.answers[state.i].other = e.target.value;
+      card.classList.remove('is-error');
+    }
+  });
+
+  render();
+  requestAnimationFrame(lockHeight);
+  return card;
+}
+</script>
+
+<script>window.__DSI_REGISTRY_LOCAL={"components": [{"name": "Penny question card", "match": [".pa-q"], "library": "Penny (project component)", "figma": null, "story": null, "notes": "Chat-embedded question card built from Coin pieces (carbon Buttons, option rows, Tab wizard when multi-question). Variants: One question / Multi question \u00b7 State: Answered after submit. Not in Coin or code yet \u2014 a hackathon component under review."}]};</script>
+<script src="../../ds-inspector.js"></script>
+</body>
+</html>

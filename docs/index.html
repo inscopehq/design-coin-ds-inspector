@@ -1,0 +1,18 @@
+<!doctype html><meta charset="utf-8"><title>DS Inspector</title>
+<style>
+ body{font:15px/1.6 ui-sans-serif,-apple-system,Inter,system-ui;background:#0F1E24;color:#E1E5E4;margin:0;padding:48px;max-width:720px}
+ h1{font-size:20px;margin:0 0 6px} .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#34A290;margin-right:8px}
+ p{color:#9AA7A6} a{color:#5ED0BB} code{background:#16292f;border:1px solid #26383f;border-radius:5px;padding:2px 6px;font-size:13px}
+ li{margin:6px 0}
+</style>
+<h1><span class="dot"></span>DS Inspector</h1>
+<p>Click any element in a prototype → see its Coin component, variant, Figma variable names, deviations, and whether it exists in code (Storybook) or design (Figma).</p>
+<h3>Try it</h3>
+<ul>
+ <li><a href="prototypes/ews-parity/index.html">EWS prototype</a> — the full app flow</li>
+ <li><a href="prototypes/penny-option-3/index.html">Penny asks a question · option 3</a> — type “one question” / “multi question” in the chat, then Alt+click the card</li>
+</ul>
+<h3>Use it on any prototype</h3>
+<p>Add one line before <code>&lt;/body&gt;</code>:</p>
+<p><code>&lt;script src="https://inscopehq.github.io/ds-inspector/ds-inspector.js"&gt;&lt;/script&gt;</code></p>
+<p>Keys: <b>Esc</b> pause · <b>⌘⇧I</b> resume · <b>Alt+click</b> inspect transient UI (open menus stay open) · <b>Audit</b> scans the whole page.</p>

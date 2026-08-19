@@ -1,0 +1,83 @@
+/* =====================================================================
+   INSCOPE LOADER — standalone component (self-contained).
+   3×3 grid of squares (6 filled). The pattern flip-flops between two
+   diagonal states; 4 squares slide per transition, reading as a
+   continuous rotation. Loops P -> Q -> P seamlessly.
+   Scales via CSS variables set on .inscope-loader:
+     --size   overall width/height   (default 100px)
+     --color  square color            (default #111111)
+     --speed  full cycle              (default 2s)
+   ===================================================================== */
+.inscope-loader {
+  --size: 100px;
+  --color: #111111;
+  --speed: 2s;
+  --gap-ratio: 0;
+  --radius-ratio: 0;
+  --bleed: 1px;
+  --gap: calc(var(--size) * var(--gap-ratio));
+  --cell: calc((var(--size) - 2 * var(--gap)) / 3);
+  --pitch: calc(var(--cell) + var(--gap));
+  --radius: calc(var(--cell) * var(--radius-ratio));
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+}
+.inscope-loader .sq {
+  position: absolute;
+  width: calc(var(--cell) + var(--bleed));
+  height: calc(var(--cell) + var(--bleed));
+  background: var(--color);
+  border-radius: var(--radius);
+  animation-duration: var(--speed);
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  will-change: transform;
+}
+/* Base (state P) cell of each square, labelled row-major by its P cell. */
+.inscope-loader .s1 { left: calc(1 * var(--pitch)); top: 0;                      animation-name: il-s1; }
+.inscope-loader .s2 { left: calc(2 * var(--pitch)); top: 0;                      animation-name: il-s2; }
+.inscope-loader .s3 { left: 0;                      top: calc(1 * var(--pitch)); animation-name: il-s3; }
+.inscope-loader .s4 { left: calc(2 * var(--pitch)); top: calc(1 * var(--pitch)); animation-name: il-s4; }
+.inscope-loader .s5 { left: 0;                      top: calc(2 * var(--pitch)); animation-name: il-s5; }
+.inscope-loader .s6 { left: calc(1 * var(--pitch)); top: calc(2 * var(--pitch)); animation-name: il-s6; }
+
+/* First half (0-50%) P->Q: top row left, bottom row right.
+   Second half (50-100%) Q->P: left col down, right col up. */
+@keyframes il-s1 {
+  0%   { transform: translate(0, 0); }
+  40%  { transform: translate(calc(-1 * var(--pitch)), 0); }
+  50%  { transform: translate(calc(-1 * var(--pitch)), 0); }
+  90%  { transform: translate(calc(-1 * var(--pitch)), calc(1 * var(--pitch))); }
+  100% { transform: translate(calc(-1 * var(--pitch)), calc(1 * var(--pitch))); }
+}
+@keyframes il-s2 {
+  0%   { transform: translate(0, 0); }
+  40%  { transform: translate(calc(-1 * var(--pitch)), 0); }
+  100% { transform: translate(calc(-1 * var(--pitch)), 0); }
+}
+@keyframes il-s3 {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(0, 0); }
+  90%  { transform: translate(0, calc(1 * var(--pitch))); }
+  100% { transform: translate(0, calc(1 * var(--pitch))); }
+}
+@keyframes il-s4 {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(0, 0); }
+  90%  { transform: translate(0, calc(-1 * var(--pitch))); }
+  100% { transform: translate(0, calc(-1 * var(--pitch))); }
+}
+@keyframes il-s5 {
+  0%   { transform: translate(0, 0); }
+  40%  { transform: translate(calc(1 * var(--pitch)), 0); }
+  100% { transform: translate(calc(1 * var(--pitch)), 0); }
+}
+@keyframes il-s6 {
+  0%   { transform: translate(0, 0); }
+  40%  { transform: translate(calc(1 * var(--pitch)), 0); }
+  50%  { transform: translate(calc(1 * var(--pitch)), 0); }
+  90%  { transform: translate(calc(1 * var(--pitch)), calc(-1 * var(--pitch))); }
+  100% { transform: translate(calc(1 * var(--pitch)), calc(-1 * var(--pitch))); }
+}
+@media (prefers-reduced-motion: reduce) { .inscope-loader .sq { animation: none; } }

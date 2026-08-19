@@ -1,0 +1,142 @@
+/* ============================================================
+   Coin design system — tokens
+   Read directly from the Coin Figma file variables
+   (file 9YJsAfJ1iyHO1BS4SeGoYK, "Latest" page).
+   This is the single source of truth for the prototype.
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap");
+
+:root {
+  /* ----- TEXT ----- */
+  --text-primary:      #212121;
+  --text-secondary:    #5c5c5c;
+  --text-placeholder:  #ababab;
+  --text-inverse:      #ffffff;
+
+  /* ----- BACKGROUNDS ----- */
+  --background-page:    #ffffff;
+  --background-surface: #ffffff;
+  --background-sunken:  #f0f0f0;
+
+  /* ----- BRAND NEUTRALS ----- */
+  --brand-neutral-carbon: #212121;
+  --brand-neutral-50:  #f9f9f9;
+  --brand-neutral-100: #f0f0f0;
+  --brand-neutral-200: #e4e4e4;
+  --brand-neutral-300: #c8c8c8;
+
+  /* ----- BORDERS ----- */
+  --border-subtle:   #e4e4e4;
+  --border-default:  #c8c8c8;
+  --border-strong:   #858585;
+
+  /* ----- BUTTONS ----- */
+  --button-primary-bg:     #212121;
+  --button-ghost-hover:    #f0f0f0;
+  --button-destructive-bg: #dc2626;
+
+  /* ----- BRAND INDIGO (accent) ----- */
+  --brand-indigo-100: #d8d2fc;
+  --brand-indigo-200: #b8aefa;
+  --brand-indigo-500: #3f2ac0;
+  --brand-indigo-600: #271791;
+
+  /* ----- SEMANTIC ----- */
+  --semantic-success-text: #047857;
+  --semantic-success-bg:   #ecfdf5;
+  --success-bar:           #10b981;
+  --semantic-error-text:   #b91c1c;
+  --semantic-error-bg:     #fef2f2;
+  --semantic-warning-text: #92400e;
+  --semantic-warning-bg:   #fffbeb;
+  --semantic-info-bg:      #f9f9f9;
+  --info-bar:              #ababab;
+
+  /* ----- ACCENT RAMPS ----- */
+  --accent-coral-400:   #ff7251;
+  --accent-saffron-400: #facc15;
+  --accent-sky-600:     #0284c7;  --accent-sky-100:     #e0f2fe;
+  --accent-lime-600:    #65a30d;  --accent-lime-100:    #ecfccb;
+  --accent-fuchsia-600: #c026d3;  --accent-fuchsia-100: #fae8ff;
+  --accent-crimson-600: #be0d5a;  --accent-crimson-100: #ffd6e5;
+
+  /* ----- RADII ----- */
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   10px;
+  --radius-full: 9999px;
+
+  /* ----- TYPE FAMILIES ----- */
+  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", monospace; /* button labels */
+
+  /* ----- TYPE SCALE (Geist) ----- */
+  /* Headings — SemiBold 600 */
+  --fs-h2: 30px;  --lh-h2: 36px;  --tr-h2: -0.75px;
+  --fs-h3: 24px;  --lh-h3: 32px;  --tr-h3: -0.5px;
+  --fs-h4: 20px;  --lh-h4: 28px;  --tr-h4: -0.25px;
+  --fs-h5: 16px;  --lh-h5: 24px;
+  --fs-h6: 14px;  --lh-h6: 20px;
+  /* Body — Regular 400 */
+  --fs-body:    16px;  --lh-body:    24px;
+  --fs-body-sm: 14px;  --lh-body-sm: 20px;
+  --fs-body-xs: 12px;  --lh-body-xs: 16px;
+  /* Label — Medium 500 ; Badge — SemiBold 600 ; Button — Geist Mono Medium 500 */
+  --fs-badge-sm: 12px;
+
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* ----- SPACING (8pt-based; matches observed gap-8 / px-12 / py-8) ----- */
+  --sp-3xs: 2px;
+  --sp-2xs: 4px;
+  --sp-xs:  6px;
+  --sp-s:   8px;
+  --sp-m:   12px;
+  --sp-l:   16px;
+  --sp-xl:  20px;
+  --sp-2xl: 24px;
+  --sp-3xl: 32px;
+  --sp-4xl: 40px;
+  --sp-5xl: 48px;
+
+  /* ----- SHADOWS (subtle, neutral) ----- */
+  --shadow-xs: 0 1px 2px rgba(33,33,33,0.05);
+  --shadow-sm: 0 1px 3px rgba(33,33,33,0.08), 0 1px 2px rgba(33,33,33,0.04);
+  --shadow-md: 0 4px 12px rgba(33,33,33,0.08), 0 2px 4px rgba(33,33,33,0.04);
+  --shadow-lg: 0 12px 32px rgba(33,33,33,0.12), 0 4px 8px rgba(33,33,33,0.04);
+  --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--brand-indigo-500) 25%, transparent);
+
+  /* ----- LAYOUT ----- */
+  --app-header-h: 56px;
+  --doc-toolbar-h: 52px;
+  --left-nav-w: 64px;
+  --drawer-w: 360px;
+}
+
+/* ========================================================================
+   Base element styles
+   ======================================================================== */
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--text-primary);
+  background: var(--background-page);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.h2 { font: var(--fw-semibold) var(--fs-h2)/var(--lh-h2) var(--font-sans); letter-spacing: var(--tr-h2); color: var(--text-primary); margin: 0; }
+.h3 { font: var(--fw-semibold) var(--fs-h3)/var(--lh-h3) var(--font-sans); letter-spacing: var(--tr-h3); color: var(--text-primary); margin: 0; }
+.h4 { font: var(--fw-semibold) var(--fs-h4)/var(--lh-h4) var(--font-sans); letter-spacing: var(--tr-h4); color: var(--text-primary); margin: 0; }
+.h5 { font: var(--fw-semibold) var(--fs-h5)/var(--lh-h5) var(--font-sans); color: var(--text-primary); margin: 0; }
+.h6 { font: var(--fw-semibold) var(--fs-h6)/var(--lh-h6) var(--font-sans); color: var(--text-primary); margin: 0; }
+.body    { font: var(--fw-regular) var(--fs-body)/var(--lh-body) var(--font-sans); color: var(--text-primary); margin: 0; }
+.body-sm { font: var(--fw-regular) var(--fs-body-sm)/var(--lh-body-sm) var(--font-sans); color: var(--text-primary); }
+.body-xs { font: var(--fw-regular) var(--fs-body-xs)/var(--lh-body-xs) var(--font-sans); color: var(--text-primary); }
+.label    { font: var(--fw-medium) var(--fs-body-sm)/var(--lh-body-sm) var(--font-sans); }
+.label-sm { font: var(--fw-medium) var(--fs-body-xs)/var(--lh-body-xs) var(--font-sans); }
+.tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }

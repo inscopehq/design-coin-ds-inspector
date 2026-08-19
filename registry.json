@@ -1,0 +1,1543 @@
+{
+  "_readme": [
+    "This file is what makes the inspector say 'this deviates from the design system'.",
+    "",
+    "  name      — what the component is called (same name as in Figma).",
+    "  match     — CSS selectors your prototypes use for it. Lets the tool recognise",
+    "              a component WITHOUT editing prototype HTML.",
+    "  figma     — Figma URL for the component. A file-level link works; paste the",
+    "              component's node URL (right-click the component > Copy link) to",
+    "              deep-link straight to it.",
+    "  figmaPath — where it sits in the library, shown as a breadcrumb in the panel.",
+    "  story     — Storybook/Chromatic URL for the coded component. Present = 'exists",
+    "              in code, use the real one'; absent with a figma link = 'design only'.",
+    "  library   — which published library owns it.",
+    "  code      — where the real component lives, for the developer.",
+    "  variants  — what each variant is SUPPOSED to look like. This is the spec.",
+    "              Values are token names (--teal-primary) or literals (5px).",
+    "              Use '*' as the variant name if the rule applies to all variants.",
+    "",
+    "No 'variants' block means the tool can only check whether values are tokens.",
+    "A 'variants' block means it can tell you exactly what is wrong.",
+    "The 'match' selectors also tell the tool which CSS is the component's own —",
+    "any matched rule that reaches beyond them (contextual ancestors, ids, foreign",
+    "classes) is reported as a change on top of the design system."
+  ],
+  "components": [
+    {
+      "name": "Button",
+      "match": [
+        ".btn",
+        ".button",
+        "button[class*='btn']"
+      ],
+      "code": "components/Button.jsx",
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=16-146",
+      "figmaPath": "Coin design system › Components › Button",
+      "library": "Coin design system",
+      "notes": "Coin axes: Variant Default/Secondary/Outline/Ghost/Destructive/Link/Split · Size Small/Default/Large/Icon-* · State. 'primary' in prototypes = Coin Default. Label is 14 Geist Mono Medium. Specs measured from the Figma component 2026-08-18. Icon-* sizes ignore the icon-swap prop — swap the nested Icon instance instead.",
+      "variants": {
+        "Default": {
+          "border-radius": "8px",
+          "font-size": "14px",
+          "font-weight": "500",
+          "background-color": "#212121",
+          "color": "#FFFFFF"
+        },
+        "Primary": {
+          "border-radius": "8px",
+          "font-size": "14px",
+          "font-weight": "500",
+          "background-color": "#212121",
+          "color": "#FFFFFF"
+        },
+        "Secondary": {
+          "border-radius": "8px",
+          "font-size": "14px",
+          "font-weight": "500",
+          "background-color": "#F0F0F0",
+          "color": "#212121"
+        },
+        "Outline": {
+          "border-radius": "8px",
+          "font-size": "14px",
+          "font-weight": "500",
+          "background-color": "#FFFFFF",
+          "color": "#212121",
+          "border-top-color": "#C8C8C8"
+        },
+        "Ghost": {
+          "border-radius": "8px",
+          "font-size": "14px",
+          "font-weight": "500",
+          "background-color": "rgba(0, 0, 0, 0)",
+          "color": "#212121"
+        },
+        "Destructive": {
+          "border-radius": "8px",
+          "font-size": "14px",
+          "font-weight": "500",
+          "background-color": "#DC2626",
+          "color": "#FFFFFF"
+        },
+        "Link": {
+          "background-color": "rgba(0, 0, 0, 0)",
+          "color": "#212121",
+          "font-size": "14px",
+          "font-weight": "500"
+        }
+      },
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-button--default"
+    },
+    {
+      "name": "Card",
+      "match": [
+        ".card",
+        ".tile"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=2513-109",
+      "figmaPath": "Coin design system › Components › Card",
+      "library": "Coin design system",
+      "notes": "Coin Card: Interaction Clickable/Non-clickable × State. White surface, 1px #C8C8C8 border, radius 10, pad 24. Measured from Figma 2026-08-18.",
+      "variants": {
+        "*": {
+          "background-color": "#FFFFFF",
+          "border-top-color": "#C8C8C8",
+          "border-radius": "10px",
+          "padding-top": "24px"
+        }
+      },
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-card--default"
+    },
+    {
+      "name": "Badge",
+      "match": [
+        ".badge",
+        ".chip",
+        ".pill",
+        ".tag"
+      ],
+      "code": "components/Badge.jsx",
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=57-32",
+      "figmaPath": "Coin design system › Components › Badge",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-badge--default",
+      "notes": "Coin Badge, measured 2026-08-18: pill radius, Geist SemiBold 12 (Default size), pad 4/12. Variants: Default #212121/#FFF · Secondary #F0F0F0/#212121 · Muted #F0F0F0/#5C5C5C · Destructive #DC2626/#FFF · Outline #FFF+#C8C8C8. No spec block on purpose: prototype status pills are EWS/StatusPill, not Coin Badge — a Badge spec would false-flag them."
+    },
+    {
+      "name": "Icon",
+      "match": [
+        ".icon",
+        "svg.icon",
+        ".lucide"
+      ],
+      "code": "components/Icon.jsx",
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=44-2",
+      "figmaPath": "Coin design system › Components › Icon",
+      "library": "Coin design system",
+      "notes": "Code uses lucide-react directly rather than an Icon component. Stroke 1.5, sizes 16/20/24."
+    },
+    {
+      "name": "Modal",
+      "match": [
+        ".modal",
+        ".dialog",
+        "dialog"
+      ],
+      "code": "components/Modal.jsx",
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=84-97",
+      "figmaPath": "Coin design system › Components › Modal / Dialog",
+      "library": "Coin design system",
+      "notes": "Named 'Modal / Dialog' in Coin and 'Dialog' in code.",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-dialog--default"
+    },
+    {
+      "name": "Filter Trigger",
+      "match": [
+        ".select--kv",
+        ".filter-trigger",
+        ".filter"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=193-545",
+      "figmaPath": "Coin design system › Components › Filter Trigger",
+      "library": "Coin design system",
+      "notes": "Key-value filter button (Status · All) opening a Coin Menu; menu alignment follows its trigger. Measured: inside-placement trigger h40, 14px. No direct code component — closest are SingleSelect/MultiSelectDropdown."
+    },
+    {
+      "name": "Select",
+      "match": [
+        ".select",
+        ".ne-select",
+        "select"
+      ],
+      "code": "components/Select.jsx",
+      "figma": null,
+      "figmaPath": null,
+      "library": null,
+      "notes": "In code as SingleSelectDropdown (MultiSelectDropdown also exists) — but missing from Coin in Figma. Design gap, not a code gap.",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-singleselectdropdown--default"
+    },
+    {
+      "name": "Stat",
+      "match": [
+        ".kpi",
+        ".stat",
+        ".metric"
+      ],
+      "code": null,
+      "figma": null,
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-stat-card--all-variants",
+      "notes": "In code as 'Stat card' — not yet a Coin component in Figma."
+    },
+    {
+      "name": "Navigation item",
+      "match": [
+        ".nav__item",
+        ".nav-item",
+        ".menu__item"
+      ],
+      "code": null,
+      "figma": null
+    },
+    {
+      "name": "Tabs",
+      "match": [
+        ".tab",
+        ".tabs"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=369-22",
+      "figmaPath": "Coin design system › Components › Tab / Tab Group",
+      "library": "Coin design system",
+      "notes": "Coin Tab: Style Box (active = white fill, radius 6) / Line (underline) × State, 14px. Two styles means no single flat spec — identity and links only. On the 'Segment Control / Tabs' page.",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-tabs--default"
+    },
+    {
+      "name": "Table",
+      "match": [
+        "table",
+        ".table"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=37-12",
+      "notes": "Coin has Table + TableRow (hardcoded invoice demo). Code has 'Summary table', a specific report widget — not a general table.",
+      "library": "Coin design system",
+      "figmaPath": "Coin design system › Components › Table"
+    },
+    {
+      "name": "Date Picker",
+      "match": [
+        ".date-picker",
+        ".datepicker",
+        ".dp"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=2552-193",
+      "figmaPath": "Coin design system › Components › Date Picker",
+      "library": "Coin design system",
+      "notes": "Coin: Date Picker (Type × State) + Calendar (Date / Month / Year / Range).",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-date-picker--default"
+    },
+    {
+      "name": "Input",
+      "match": [
+        ".field",
+        ".ne-field",
+        ".input",
+        "input"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=159-34",
+      "figmaPath": "Coin design system › Components › Input",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-input--default",
+      "notes": "Coin Input, measured 2026-08-18: white, 1px #E4E4E4 border, radius 8, h40 (Small h32). Size × State, optional leading icon / label. The search field and the wizard ne-field are this component."
+    },
+    {
+      "name": "Avatar",
+      "match": [
+        ".avatar"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=26-11",
+      "figmaPath": "Coin design system › Components › Avatar",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-avatar--default",
+      "notes": "Coin Avatar: Size Small/Default/Large × Type Image/Fallback."
+    },
+    {
+      "name": "Menu",
+      "match": [
+        ".menu"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=52-24",
+      "figmaPath": "Coin design system › Components › Menu",
+      "library": "Coin design system",
+      "notes": "Coin Menu + MenuItem (State Default/Hover/Disabled/Destructive). Menu alignment follows its trigger. In code the closest are the dropdown components."
+    },
+    {
+      "name": "Tooltip",
+      "match": [
+        ".tooltip",
+        ".info-tip"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=2019-25",
+      "figmaPath": "Coin design system › Components › Tooltip",
+      "library": "Coin design system",
+      "notes": "In code as Tooltip (Inscope UI). The info-tip pattern in prototypes is this component.",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-tooltip--default"
+    },
+    {
+      "name": "File Uploader",
+      "match": [
+        ".uploader",
+        ".file-uploader",
+        ".dropzone"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=2622-53865",
+      "figmaPath": "Coin design system › Components › File Uploader",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-file-uploader--all-states"
+    },
+    {
+      "name": "Empty state",
+      "match": [
+        ".empty",
+        ".eng-empty",
+        ".empty-state"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=149-67",
+      "figmaPath": "Coin design system › Components › Empty",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-empty-state--all-variants",
+      "notes": "Named 'Empty' in Coin, 'Empty state' in code."
+    },
+    {
+      "name": "Top Bar",
+      "match": [
+        ".topbar"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=2647-160",
+      "figmaPath": "Coin design system › Widgets › Top Bar",
+      "library": "Coin design system",
+      "notes": "Coin widget: Client Selected/None × Depth Root/1-deep. Holds back/forward, the Client switcher split-button, breadcrumb levels, and help."
+    },
+    {
+      "name": "Side Navigation",
+      "match": [
+        ".nav",
+        ".sidenav",
+        ".rail"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=104-164",
+      "figmaPath": "Coin design system › Widgets › Side Navigation",
+      "library": "Coin design system",
+      "notes": "Coin widget: State Default/Hovering/Clicked. 64px icon rail; expands on hover."
+    },
+    {
+      "name": "Loader",
+      "match": [
+        ".inscope-loader",
+        ".page-loader",
+        ".loader",
+        ".spinner"
+      ],
+      "code": null,
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=1131-3",
+      "figmaPath": "Coin design system › Components › Loaders",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-loading--default",
+      "notes": "The Inscope mark loader (2 squares + knockout). Named 'Loading' in code."
+    },
+    {
+      "name": "Checkbox",
+      "match": [
+        ".checkbox",
+        "input[type='checkbox']"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=23-8",
+      "figmaPath": "Coin design system › Components › Checkbox",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-checkbox--default"
+    },
+    {
+      "name": "Radio",
+      "match": [
+        ".radio",
+        "input[type='radio']"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=25-6",
+      "figmaPath": "Coin design system › Components › Radio",
+      "library": "Coin design system",
+      "notes": "In Coin; no code component yet."
+    },
+    {
+      "name": "Switch",
+      "match": [
+        ".switch",
+        ".toggle"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=24-8",
+      "figmaPath": "Coin design system › Components › Switch",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-toggle--default",
+      "notes": "Named 'Toggle' in code."
+    },
+    {
+      "name": "Separator",
+      "match": [
+        ".separator",
+        ".divider",
+        "hr"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=27-4",
+      "figmaPath": "Coin design system › Components › Separator",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-separator--horizontal"
+    },
+    {
+      "name": "Skeleton",
+      "match": [
+        ".skeleton",
+        ".shimmer"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=28-5",
+      "figmaPath": "Coin design system › Components › Skeleton",
+      "library": "Coin design system",
+      "notes": "In Coin; no code component yet."
+    },
+    {
+      "name": "Textarea",
+      "match": [
+        ".textarea",
+        "textarea"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=21-10",
+      "figmaPath": "Coin design system › Components › Textarea",
+      "library": "Coin design system",
+      "notes": "In Coin; no code component yet."
+    },
+    {
+      "name": "Label",
+      "match": [
+        ".flabel",
+        ".ne-flabel",
+        "label"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=387-7",
+      "figmaPath": "Coin design system › Components › Label",
+      "library": "Coin design system",
+      "notes": "Form field label. In Coin; no code component yet (Typography/Label covers the text style)."
+    },
+    {
+      "name": "Progress Indicator",
+      "match": [
+        ".progress",
+        ".stepper",
+        ".gen-step"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=691-56",
+      "figmaPath": "Coin design system › Components › Progress Indicator",
+      "library": "Coin design system",
+      "story": "https://main--6a0b7bd977368980985220da.chromatic.com/?path=/story/inscope-ui-progressindicator--default",
+      "notes": "Progress Step: Variant Step/Bar × Orientation × State. The wizard gen-step rows are this pattern."
+    },
+    {
+      "name": "Accordion",
+      "match": [
+        ".accordion"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=119-17",
+      "figmaPath": "Coin design system › Components › Accordion",
+      "library": "Coin design system",
+      "notes": "WIP in Coin (Accordion Item: State × Caret)."
+    },
+    {
+      "name": "Collapsible",
+      "match": [
+        ".collapsible"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=142-33",
+      "figmaPath": "Coin design system › Components › Collapsible",
+      "library": "Coin design system"
+    },
+    {
+      "name": "Filter Chip",
+      "match": [
+        ".filter-chip",
+        ".fchip"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=2607-80",
+      "figmaPath": "Coin design system › Components › Filter Chip",
+      "library": "Coin design system",
+      "notes": "WIP in Coin; a SET with State variants."
+    },
+    {
+      "name": "Toast",
+      "match": [
+        ".toast",
+        ".snackbar"
+      ],
+      "figma": "https://www.figma.com/design/9YJsAfJ1iyHO1BS4SeGoYK/Coin-design-system?node-id=1376-270",
+      "figmaPath": "Coin design system › Components › Toast",
+      "library": "Coin design system",
+      "notes": "WIP in Coin: Type Neutral/Success/… × Persistence."
+    }
+  ],
+  "typography": [
+    {
+      "name": "Display",
+      "family": "Geist",
+      "weight": 700,
+      "size": 48,
+      "lineHeight": 56
+    },
+    {
+      "name": "Heading/H1",
+      "family": "Geist",
+      "weight": 700,
+      "size": 36,
+      "lineHeight": 40
+    },
+    {
+      "name": "Heading/H2",
+      "family": "Geist",
+      "weight": 600,
+      "size": 30,
+      "lineHeight": 36
+    },
+    {
+      "name": "Heading/H3",
+      "family": "Geist",
+      "weight": 600,
+      "size": 24,
+      "lineHeight": 32
+    },
+    {
+      "name": "Heading/H4",
+      "family": "Geist",
+      "weight": 600,
+      "size": 20,
+      "lineHeight": 28
+    },
+    {
+      "name": "Heading/H5",
+      "family": "Geist",
+      "weight": 600,
+      "size": 16,
+      "lineHeight": 24
+    },
+    {
+      "name": "Heading/H6",
+      "family": "Geist",
+      "weight": 600,
+      "size": 14,
+      "lineHeight": 20
+    },
+    {
+      "name": "Body/Large",
+      "family": "Geist",
+      "weight": 400,
+      "size": 18,
+      "lineHeight": 28
+    },
+    {
+      "name": "Body/Base",
+      "family": "Geist",
+      "weight": 400,
+      "size": 16,
+      "lineHeight": 24
+    },
+    {
+      "name": "Body/Small",
+      "family": "Geist",
+      "weight": 400,
+      "size": 14,
+      "lineHeight": 20
+    },
+    {
+      "name": "Body/XSmall",
+      "family": "Geist",
+      "weight": 400,
+      "size": 12,
+      "lineHeight": 16
+    },
+    {
+      "name": "Label/Default",
+      "family": "Geist",
+      "weight": 500,
+      "size": 14,
+      "lineHeight": 20
+    },
+    {
+      "name": "Label/Small",
+      "family": "Geist",
+      "weight": 500,
+      "size": 12,
+      "lineHeight": 16
+    },
+    {
+      "name": "Button/Large",
+      "family": "Geist Mono",
+      "weight": 500,
+      "size": 16,
+      "lineHeight": 24
+    },
+    {
+      "name": "Button/Default",
+      "family": "Geist Mono",
+      "weight": 500,
+      "size": 14,
+      "lineHeight": 20
+    },
+    {
+      "name": "Button/Small",
+      "family": "Geist Mono",
+      "weight": 500,
+      "size": 12,
+      "lineHeight": 16
+    },
+    {
+      "name": "Code/Base",
+      "family": "Geist Mono",
+      "weight": 400,
+      "size": 14,
+      "lineHeight": 20
+    },
+    {
+      "name": "Code/Small",
+      "family": "Geist Mono",
+      "weight": 400,
+      "size": 12,
+      "lineHeight": 16
+    },
+    {
+      "name": "Badge/Small",
+      "family": "Geist",
+      "weight": 600,
+      "size": 11,
+      "lineHeight": 16
+    },
+    {
+      "name": "Badge/Default",
+      "family": "Geist",
+      "weight": 600,
+      "size": 12,
+      "lineHeight": 16
+    },
+    {
+      "name": "Badge/Large",
+      "family": "Geist",
+      "weight": 600,
+      "size": 14,
+      "lineHeight": 20
+    }
+  ],
+  "variables": [
+    {
+      "name": "radius/sm",
+      "type": "number",
+      "value": 6
+    },
+    {
+      "name": "radius/md",
+      "type": "number",
+      "value": 8
+    },
+    {
+      "name": "radius/lg",
+      "type": "number",
+      "value": 10
+    },
+    {
+      "name": "radius/xl",
+      "type": "number",
+      "value": 14
+    },
+    {
+      "name": "radius/full",
+      "type": "number",
+      "value": 9999
+    },
+    {
+      "name": "spacing/4",
+      "type": "number",
+      "value": 4
+    },
+    {
+      "name": "spacing/8",
+      "type": "number",
+      "value": 8
+    },
+    {
+      "name": "spacing/12",
+      "type": "number",
+      "value": 12
+    },
+    {
+      "name": "spacing/16",
+      "type": "number",
+      "value": 16
+    },
+    {
+      "name": "spacing/20",
+      "type": "number",
+      "value": 20
+    },
+    {
+      "name": "spacing/24",
+      "type": "number",
+      "value": 24
+    },
+    {
+      "name": "spacing/28",
+      "type": "number",
+      "value": 28
+    },
+    {
+      "name": "spacing/32",
+      "type": "number",
+      "value": 32
+    },
+    {
+      "name": "spacing/36",
+      "type": "number",
+      "value": 36
+    },
+    {
+      "name": "spacing/40",
+      "type": "number",
+      "value": 40
+    },
+    {
+      "name": "spacing/44",
+      "type": "number",
+      "value": 44
+    },
+    {
+      "name": "spacing/48",
+      "type": "number",
+      "value": 48
+    },
+    {
+      "name": "spacing/52",
+      "type": "number",
+      "value": 52
+    },
+    {
+      "name": "spacing/56",
+      "type": "number",
+      "value": 56
+    },
+    {
+      "name": "spacing/60",
+      "type": "number",
+      "value": 60
+    },
+    {
+      "name": "neutral/50",
+      "type": "color",
+      "value": "#F9F9F9"
+    },
+    {
+      "name": "neutral/100",
+      "type": "color",
+      "value": "#F0F0F0"
+    },
+    {
+      "name": "neutral/200",
+      "type": "color",
+      "value": "#E4E4E4"
+    },
+    {
+      "name": "neutral/300",
+      "type": "color",
+      "value": "#C8C8C8"
+    },
+    {
+      "name": "neutral/400",
+      "type": "color",
+      "value": "#ABABAB"
+    },
+    {
+      "name": "neutral/500",
+      "type": "color",
+      "value": "#858585"
+    },
+    {
+      "name": "neutral/600",
+      "type": "color",
+      "value": "#5C5C5C"
+    },
+    {
+      "name": "neutral/700",
+      "type": "color",
+      "value": "#3D3D3D"
+    },
+    {
+      "name": "neutral/800",
+      "type": "color",
+      "value": "#262626"
+    },
+    {
+      "name": "neutral/900",
+      "type": "color",
+      "value": "#000000"
+    },
+    {
+      "name": "neutral/carbon",
+      "type": "color",
+      "value": "#212121"
+    },
+    {
+      "name": "indigo/50",
+      "type": "color",
+      "value": "#EEEBFF"
+    },
+    {
+      "name": "indigo/100",
+      "type": "color",
+      "value": "#D8D2FC"
+    },
+    {
+      "name": "indigo/200",
+      "type": "color",
+      "value": "#B8AEFA"
+    },
+    {
+      "name": "indigo/300",
+      "type": "color",
+      "value": "#8E7DF5"
+    },
+    {
+      "name": "indigo/400",
+      "type": "color",
+      "value": "#6450E8"
+    },
+    {
+      "name": "indigo/500",
+      "type": "color",
+      "value": "#3F2AC0"
+    },
+    {
+      "name": "indigo/600",
+      "type": "color",
+      "value": "#271791"
+    },
+    {
+      "name": "indigo/700",
+      "type": "color",
+      "value": "#1C1170"
+    },
+    {
+      "name": "indigo/800",
+      "type": "color",
+      "value": "#130C50"
+    },
+    {
+      "name": "indigo/900",
+      "type": "color",
+      "value": "#0B0830"
+    },
+    {
+      "name": "fuchsia/50",
+      "type": "color",
+      "value": "#FDF4FF"
+    },
+    {
+      "name": "fuchsia/100",
+      "type": "color",
+      "value": "#FAE8FF"
+    },
+    {
+      "name": "fuchsia/200",
+      "type": "color",
+      "value": "#F5D0FE"
+    },
+    {
+      "name": "fuchsia/300",
+      "type": "color",
+      "value": "#F0ABFC"
+    },
+    {
+      "name": "fuchsia/400",
+      "type": "color",
+      "value": "#E879F9"
+    },
+    {
+      "name": "fuchsia/500",
+      "type": "color",
+      "value": "#D946EF"
+    },
+    {
+      "name": "fuchsia/600",
+      "type": "color",
+      "value": "#C026D3"
+    },
+    {
+      "name": "fuchsia/700",
+      "type": "color",
+      "value": "#A21CAF"
+    },
+    {
+      "name": "fuchsia/800",
+      "type": "color",
+      "value": "#86198F"
+    },
+    {
+      "name": "fuchsia/900",
+      "type": "color",
+      "value": "#701A75"
+    },
+    {
+      "name": "fuchsia/pastel",
+      "type": "color",
+      "value": "#F5D0FE"
+    },
+    {
+      "name": "fuchsia/bright",
+      "type": "color",
+      "value": "#D946EF"
+    },
+    {
+      "name": "fuchsia/text",
+      "type": "color",
+      "value": "#A21CAF"
+    },
+    {
+      "name": "saffron/50",
+      "type": "color",
+      "value": "#FEFCE8"
+    },
+    {
+      "name": "saffron/100",
+      "type": "color",
+      "value": "#FEF9C3"
+    },
+    {
+      "name": "saffron/200",
+      "type": "color",
+      "value": "#FEF08A"
+    },
+    {
+      "name": "saffron/300",
+      "type": "color",
+      "value": "#FDE047"
+    },
+    {
+      "name": "saffron/400",
+      "type": "color",
+      "value": "#FACC15"
+    },
+    {
+      "name": "saffron/500",
+      "type": "color",
+      "value": "#EAB308"
+    },
+    {
+      "name": "saffron/600",
+      "type": "color",
+      "value": "#CA8A04"
+    },
+    {
+      "name": "saffron/700",
+      "type": "color",
+      "value": "#A16207"
+    },
+    {
+      "name": "saffron/800",
+      "type": "color",
+      "value": "#854D0E"
+    },
+    {
+      "name": "saffron/900",
+      "type": "color",
+      "value": "#713F12"
+    },
+    {
+      "name": "saffron/pastel",
+      "type": "color",
+      "value": "#FEF08A"
+    },
+    {
+      "name": "saffron/bright",
+      "type": "color",
+      "value": "#EAB308"
+    },
+    {
+      "name": "saffron/text",
+      "type": "color",
+      "value": "#A16207"
+    },
+    {
+      "name": "lime/50",
+      "type": "color",
+      "value": "#F7FEE7"
+    },
+    {
+      "name": "lime/100",
+      "type": "color",
+      "value": "#ECFCCB"
+    },
+    {
+      "name": "lime/200",
+      "type": "color",
+      "value": "#D9F99D"
+    },
+    {
+      "name": "lime/300",
+      "type": "color",
+      "value": "#BEF264"
+    },
+    {
+      "name": "lime/400",
+      "type": "color",
+      "value": "#A3E635"
+    },
+    {
+      "name": "lime/500",
+      "type": "color",
+      "value": "#84CC16"
+    },
+    {
+      "name": "lime/600",
+      "type": "color",
+      "value": "#65A30D"
+    },
+    {
+      "name": "lime/700",
+      "type": "color",
+      "value": "#4D7C0F"
+    },
+    {
+      "name": "lime/800",
+      "type": "color",
+      "value": "#3F6212"
+    },
+    {
+      "name": "lime/900",
+      "type": "color",
+      "value": "#365314"
+    },
+    {
+      "name": "lime/pastel",
+      "type": "color",
+      "value": "#D9F99D"
+    },
+    {
+      "name": "lime/bright",
+      "type": "color",
+      "value": "#84CC16"
+    },
+    {
+      "name": "lime/text",
+      "type": "color",
+      "value": "#4D7C0F"
+    },
+    {
+      "name": "sky/50",
+      "type": "color",
+      "value": "#F0F9FF"
+    },
+    {
+      "name": "sky/100",
+      "type": "color",
+      "value": "#E0F2FE"
+    },
+    {
+      "name": "sky/200",
+      "type": "color",
+      "value": "#BAE6FD"
+    },
+    {
+      "name": "sky/300",
+      "type": "color",
+      "value": "#7DD3FC"
+    },
+    {
+      "name": "sky/400",
+      "type": "color",
+      "value": "#38BDF8"
+    },
+    {
+      "name": "sky/500",
+      "type": "color",
+      "value": "#0EA5E9"
+    },
+    {
+      "name": "sky/600",
+      "type": "color",
+      "value": "#0284C7"
+    },
+    {
+      "name": "sky/700",
+      "type": "color",
+      "value": "#0369A1"
+    },
+    {
+      "name": "sky/800",
+      "type": "color",
+      "value": "#075985"
+    },
+    {
+      "name": "sky/900",
+      "type": "color",
+      "value": "#0C4A6E"
+    },
+    {
+      "name": "sky/pastel",
+      "type": "color",
+      "value": "#BAE6FD"
+    },
+    {
+      "name": "sky/bright",
+      "type": "color",
+      "value": "#0EA5E9"
+    },
+    {
+      "name": "sky/text",
+      "type": "color",
+      "value": "#0369A1"
+    },
+    {
+      "name": "coral/50",
+      "type": "color",
+      "value": "#FFF5F2"
+    },
+    {
+      "name": "coral/100",
+      "type": "color",
+      "value": "#FFE8E0"
+    },
+    {
+      "name": "coral/200",
+      "type": "color",
+      "value": "#FFC8B4"
+    },
+    {
+      "name": "coral/300",
+      "type": "color",
+      "value": "#FFA07A"
+    },
+    {
+      "name": "coral/400",
+      "type": "color",
+      "value": "#FF7251"
+    },
+    {
+      "name": "coral/500",
+      "type": "color",
+      "value": "#F95028"
+    },
+    {
+      "name": "coral/600",
+      "type": "color",
+      "value": "#E03010"
+    },
+    {
+      "name": "coral/700",
+      "type": "color",
+      "value": "#B82508"
+    },
+    {
+      "name": "coral/800",
+      "type": "color",
+      "value": "#8C1E07"
+    },
+    {
+      "name": "coral/900",
+      "type": "color",
+      "value": "#601507"
+    },
+    {
+      "name": "coral/pastel",
+      "type": "color",
+      "value": "#FFC8B4"
+    },
+    {
+      "name": "coral/bright",
+      "type": "color",
+      "value": "#F95028"
+    },
+    {
+      "name": "coral/text",
+      "type": "color",
+      "value": "#B82508"
+    },
+    {
+      "name": "crimson/50",
+      "type": "color",
+      "value": "#FFF0F5"
+    },
+    {
+      "name": "crimson/100",
+      "type": "color",
+      "value": "#FFD6E5"
+    },
+    {
+      "name": "crimson/200",
+      "type": "color",
+      "value": "#FFADC8"
+    },
+    {
+      "name": "crimson/300",
+      "type": "color",
+      "value": "#FF7BAC"
+    },
+    {
+      "name": "crimson/400",
+      "type": "color",
+      "value": "#F04E8A"
+    },
+    {
+      "name": "crimson/500",
+      "type": "color",
+      "value": "#DC2470"
+    },
+    {
+      "name": "crimson/600",
+      "type": "color",
+      "value": "#BE0D5A"
+    },
+    {
+      "name": "crimson/700",
+      "type": "color",
+      "value": "#960947"
+    },
+    {
+      "name": "crimson/800",
+      "type": "color",
+      "value": "#700736"
+    },
+    {
+      "name": "crimson/900",
+      "type": "color",
+      "value": "#4A0524"
+    },
+    {
+      "name": "crimson/pastel",
+      "type": "color",
+      "value": "#FFADC8"
+    },
+    {
+      "name": "crimson/bright",
+      "type": "color",
+      "value": "#DC2470"
+    },
+    {
+      "name": "crimson/text",
+      "type": "color",
+      "value": "#960947"
+    },
+    {
+      "name": "success/bg",
+      "type": "color",
+      "value": "#ECFDF5"
+    },
+    {
+      "name": "success/text",
+      "type": "color",
+      "value": "#047857"
+    },
+    {
+      "name": "success/border",
+      "type": "color",
+      "value": "#A7F3D0"
+    },
+    {
+      "name": "success/bar",
+      "type": "color",
+      "value": "#10B981"
+    },
+    {
+      "name": "warning/bg",
+      "type": "color",
+      "value": "#FFFBEB"
+    },
+    {
+      "name": "warning/text",
+      "type": "color",
+      "value": "#92400E"
+    },
+    {
+      "name": "warning/border",
+      "type": "color",
+      "value": "#FDE68A"
+    },
+    {
+      "name": "warning/bar",
+      "type": "color",
+      "value": "#F59E0B"
+    },
+    {
+      "name": "error/bg",
+      "type": "color",
+      "value": "#FEF2F2"
+    },
+    {
+      "name": "error/text",
+      "type": "color",
+      "value": "#B91C1C"
+    },
+    {
+      "name": "error/border",
+      "type": "color",
+      "value": "#FECACA"
+    },
+    {
+      "name": "error/bar",
+      "type": "color",
+      "value": "#EF4444"
+    },
+    {
+      "name": "info/bg",
+      "type": "color",
+      "value": "#F9F9F9"
+    },
+    {
+      "name": "info/text",
+      "type": "color",
+      "value": "#3D3D3D"
+    },
+    {
+      "name": "info/border",
+      "type": "color",
+      "value": "#E4E4E4"
+    },
+    {
+      "name": "info/bar",
+      "type": "color",
+      "value": "#ABABAB"
+    },
+    {
+      "name": "background/page",
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "background/surface",
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "background/sunken",
+      "type": "color",
+      "value": "#F0F0F0"
+    },
+    {
+      "name": "text/primary",
+      "type": "color",
+      "value": "#212121"
+    },
+    {
+      "name": "text/secondary",
+      "type": "color",
+      "value": "#5C5C5C"
+    },
+    {
+      "name": "text/placeholder",
+      "type": "color",
+      "value": "#ABABAB"
+    },
+    {
+      "name": "text/disabled",
+      "type": "color",
+      "value": "#C8C8C8"
+    },
+    {
+      "name": "text/inverse",
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "text/brand",
+      "type": "color",
+      "value": "#212121"
+    },
+    {
+      "name": "border/subtle",
+      "type": "color",
+      "value": "#E4E4E4"
+    },
+    {
+      "name": "border/default",
+      "type": "color",
+      "value": "#C8C8C8"
+    },
+    {
+      "name": "border/strong",
+      "type": "color",
+      "value": "#858585"
+    },
+    {
+      "name": "border/focus",
+      "type": "color",
+      "value": "#212121"
+    },
+    {
+      "name": "button/primary-bg",
+      "type": "color",
+      "value": "#212121"
+    },
+    {
+      "name": "button/primary-hover",
+      "type": "color",
+      "value": "#262626"
+    },
+    {
+      "name": "button/primary-active",
+      "type": "color",
+      "value": "#3D3D3D"
+    },
+    {
+      "name": "button/secondary-border",
+      "type": "color",
+      "value": "#C8C8C8"
+    },
+    {
+      "name": "button/ghost-hover",
+      "type": "color",
+      "value": "#F0F0F0"
+    },
+    {
+      "name": "button/destructive-bg",
+      "type": "color",
+      "value": "#DC2626"
+    },
+    {
+      "name": "semantic/success-bg",
+      "type": "color",
+      "value": "#ECFDF5"
+    },
+    {
+      "name": "semantic/success-text",
+      "type": "color",
+      "value": "#047857"
+    },
+    {
+      "name": "semantic/warning-bg",
+      "type": "color",
+      "value": "#FFFBEB"
+    },
+    {
+      "name": "semantic/warning-text",
+      "type": "color",
+      "value": "#92400E"
+    },
+    {
+      "name": "semantic/error-bg",
+      "type": "color",
+      "value": "#FEF2F2"
+    },
+    {
+      "name": "semantic/error-text",
+      "type": "color",
+      "value": "#B91C1C"
+    },
+    {
+      "name": "semantic/info-bg",
+      "type": "color",
+      "value": "#F9F9F9"
+    },
+    {
+      "name": "semantic/info-text",
+      "type": "color",
+      "value": "#3D3D3D"
+    },
+    {
+      "name": "ai/surface",
+      "type": "color",
+      "value": "#EEEBFF"
+    },
+    {
+      "name": "ai/border",
+      "type": "color",
+      "value": "#D8D2FC"
+    },
+    {
+      "name": "ai/text",
+      "type": "color",
+      "value": "#271791"
+    },
+    {
+      "name": "ai/badge-bg",
+      "type": "color",
+      "value": "#EEEBFF"
+    },
+    {
+      "name": "ai/badge-text",
+      "type": "color",
+      "value": "#271791"
+    }
+  ],
+  "effects": [
+    {
+      "name": "Elevation/Resting",
+      "effects": [
+        {
+          "x": 0,
+          "y": 1,
+          "blur": 3,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.08,
+          "inner": false
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "blur": 1,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.06,
+          "inner": false
+        }
+      ]
+    },
+    {
+      "name": "Elevation/Raised",
+      "effects": [
+        {
+          "x": 0,
+          "y": 4,
+          "blur": 8,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.1,
+          "inner": false
+        },
+        {
+          "x": 0,
+          "y": 1,
+          "blur": 3,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.06,
+          "inner": false
+        }
+      ]
+    },
+    {
+      "name": "Elevation/Pressed",
+      "effects": [
+        {
+          "x": 0,
+          "y": 1,
+          "blur": 1,
+          "spread": 0,
+          "color": "#000000",
+          "alpha": 0.05,
+          "inner": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "ds-inspector",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Click any element in an HTML prototype and see its design-system component, variant and tokens.",
+  "scripts": {
+    "serve": "node serve.mjs",
+    "test": "node test.mjs",
+    "tokens": "node gen-tokens.mjs > tokens.coin.json"
+  },
+  "devDependencies": { "jsdom": "^29.1.1" }
+}
